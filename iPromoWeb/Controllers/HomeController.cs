@@ -72,7 +72,7 @@ namespace iPromoWeb.Controllers
             {
                 try
                 {
-                    var stste = await new QuotePageDAO().StartWorkflowInstanceAsync(quote);
+                    var stste = await new PromoPageDao().StartWorkflowInstanceAsync(quote);
                     //AWSCredentials awsCredentials;
                     //if (_CredentialProfileStoreChain.TryGetAWSCredentials("local-test-profile", out awsCredentials))
                     //{

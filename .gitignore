@@ -6,6 +6,8 @@
 *.user
 *.userosscache
 *.sln.docstates
+aws-lambda-tools-defaults.json
+iam.json
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

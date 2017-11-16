@@ -15,19 +15,21 @@ namespace iPromoWeb.DAO
             StartExecutionResponse status = null;
             try
             {
-               
-                    //Check if any Promotion is submitted
 
-                    //Console.WriteLine("1. Lambda start3"+ Directory.GetCurrentDirectory() + @"\iam.json");
-                    //_CredentialProfileStoreChain = new CredentialProfileStoreChain( );//@"/iam.json"
-                    //Console.WriteLine("Profile Location="+_CredentialProfileStoreChain.ProfilesLocation);
-                    //AWSCredentials awsCredentials;
-                    //if (_CredentialProfileStoreChain.TryGetAWSCredentials("default", out awsCredentials))//local-test-profile
-                    //{
-                    //    if (awsCredentials != null)
-                    //    {
-                    string inputToStepFunc = "{ \"quoteid\": \"" + item.QuoteID + "\", \"promodesc\" : \"" + item.TPBackground + "\" }";
-                    using (AmazonStepFunctionsClient stepfunctions = new AmazonStepFunctionsClient("AKIAJ4M2ZVLTV7RNO4RA", "ul/PdvTqRGZxzBC0d1XMppEkkHPAkpBMmEJWz5io", Amazon.RegionEndpoint.USEast1))
+                //Check if any Promotion is submitted
+
+                //Console.WriteLine("1. Lambda start3"+ Directory.GetCurrentDirectory() + @"\iam.json");
+                //_CredentialProfileStoreChain = new CredentialProfileStoreChain( );//@"/iam.json"
+                //Console.WriteLine("Profile Location="+_CredentialProfileStoreChain.ProfilesLocation);
+                //AWSCredentials awsCredentials;
+                //if (_CredentialProfileStoreChain.TryGetAWSCredentials("default", out awsCredentials))//local-test-profile
+                //{
+                //    if (awsCredentials != null)
+                //    {
+                var aws_access_key_id = Environment.GetEnvironmentVariable("aws_access_key_id");
+                var aws_secret_access_key = Environment.GetEnvironmentVariable("aws_secret_access_key");
+                string inputToStepFunc = "{ \"quoteid\": \"" + item.QuoteID + "\", \"promodesc\" : \"" + item.TPBackground + "\" }";
+                    using (AmazonStepFunctionsClient stepfunctions = new AmazonStepFunctionsClient(aws_access_key_id, aws_secret_access_key, Amazon.RegionEndpoint.USEast1))
                     {
                         Console.WriteLine("Gocha credentials going to invoke Step function");
                         string nameunique = "WF-"+ item.QuoteID + "-ON-"+ DateTime.Now.ToString("ddMMyyyyHHmmssfff");

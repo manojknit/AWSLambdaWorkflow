@@ -1,4 +1,5 @@
 # Compiled source #
 ###################
-aws-lambda-tools-defaults.json
+
 iam.json
+aws-lambda-tools-defaults.json

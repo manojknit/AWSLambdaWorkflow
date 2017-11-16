@@ -17,4 +17,10 @@
     <DotNetCliToolReference Include="Amazon.Lambda.Tools" Version="1.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="iam.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

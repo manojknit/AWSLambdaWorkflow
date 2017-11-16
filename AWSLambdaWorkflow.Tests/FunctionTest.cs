@@ -21,9 +21,9 @@ namespace AWSLambdaWorkflow.Tests
             var function = new Function();
             var context = new TestLambdaContext();
             //var upperCase = function.FunctionHandler("hello world", context);
-            var upperCase = await function.FunctionHandlerAsync( context);
-
-            Assert.Equal("WaitingForActivation", upperCase);
+            var upperCase = function.FunctionHandler( context);
+            
+            Assert.Equal("OK", upperCase);
         }
     }
 }

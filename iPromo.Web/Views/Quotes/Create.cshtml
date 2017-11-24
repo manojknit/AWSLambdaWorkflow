@@ -1,0 +1,1055 @@
+﻿@model iPromo.Entities.Quote
+@{
+
+
+    ViewData["Title"] = "Details";
+    var isReadOnly = (ViewBag.Role == "RSM" || ViewBag.QuoteNumber == null) ? string.Empty : "readonly=\"readonly\"";
+
+    string statusStyle = StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)];
+    statusStyle = System.Text.RegularExpressions.Regex.Replace(statusStyle, @"\s", "").ToLower();
+
+    string roleStyle = StaticItems.QuoteStatusLevel[(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)];
+    roleStyle = System.Text.RegularExpressions.Regex.Replace(ViewBag.Role, @"\s", "").ToLower();
+
+}
+<script type="text/javascript">
+        var app = app || {};
+    app.quoteNumber = '@ViewBag.QuoteNumber';
+    app.isReadonly = '@(isReadOnly!=string.Empty)'.toLowerCase() == "true";
+    app.QuoteStatusResultID = parseInt('@(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)',10);
+    app.QuoteStatusLevelID = parseInt('@(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)', 10);
+</script>
+<form id="frm">
+    <div class="container">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3 class="panel-title">SPA/TPM Quote</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Quote Number
+                        </div>
+                        <input type="text" class="form-control" readonly id="QuoteNumber" name="QuoteNumber" value="@Model.QuoteNumber">
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Quote Status
+                        </div>
+                        <div class="btn-sm form-control status-@statusStyle">@string.Format("{0} ({1})", StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)], StaticItems.QuoteStatusLevel[(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)])</div>
+
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Submit Date
+                        </div>
+                        <input type="text" class="form-control " id="SubmitDatetime" name="SubmitDatetime" value="@(Model.SubmitDatetime.HasValue?Model.SubmitDatetime.Value.ToString("MMM dd, yyyy"):"")" readonly="readonly" />
+
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Submit By
+                        </div>
+                        <input type="hidden" id="SubmittedByUserName" name="SubmittedByUserID" value="@ViewBag.UserId" readonly="readonly" />
+                        <input type="text" class="form-control " id="SubmittedByUserName" name="SubmittedByUserName" value="@ViewBag.UserName" readonly="readonly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-9 form-group">
+                                <div class="control-label">
+                                    Quote Description
+                                </div>
+                                <input type="text" @isReadOnly class="form-control " required id="TPBackground" name="TPBackground" placeholder="Type a value" value="@Model.TPBackground" />
+                            </div>
+                            <div class="col-sm-6 col-md-3 form-group">
+                                <div class="control-label">
+                                    Need Price Approved By
+                                </div>
+                                <input id="NeedPriceApprovedBy" name="NeedPriceApprovedBy" required class="form-control" placeholder="Select date" value="@(Model.NeedPriceApprovedBy.HasValue?Model.NeedPriceApprovedBy.Value.ToString("MMM dd, yyyy"):"")" @isReadOnly style="width:100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="subheading">
+                            Account Information
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Sold To #
+                        </div>
+                        <input type="text" id="kCustomers" name="PlanningAccountNumber" class="form-control" required value="@Model.PlanningAccountNumber" @isReadOnly style="width: 100%;" />
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Sold To Name
+                        </div>
+                        <input type="text" id="PlanningAccountName" name="PlanningAccountName" class="form-control" readonly="readonly" value="@ViewBag.SoldToName" />
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Currency
+                        </div>
+                        <input type="text" id="Currency" name="Currency" class="form-control" readonly="readonly" value="@ViewBag.Currency" />
+
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group-xs form-group">
+                        <div class="control-label">
+                            Account Manager
+                        </div>
+                        <input id="kddlAccountManager" class="form-control" name="AccountManagerID" placeholder="Select Account Manager" style="width:100%;" value="AccountManagerName" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Tier 2 Customer #
+                        </div>
+                        <input type="text" id="Tier2CustomerId" required name="EndCustomerID" class="form-control" value="@Model.EndCustomerID" @isReadOnly style="width: 100%;" />
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            Tier 2 Customer Name
+                        </div>
+                        <input type="text" id="Tier2CustomerName" name="Tier2CustomerName" class="form-control" value="@ViewBag.Tier2CustomerName" readonly="readonly" />
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group">
+                        <div class="control-label">
+                            End User #
+                        </div>
+                        <input type="text" id="EndCustomerId" required name="EndUser" class="form-control" value="@Model.EndUser" @isReadOnly style="width: 100%;" />
+                    </div>
+                    <div class="col-sm-6 col-md-3 form-group-xs form-group">
+                        <div class="control-label">
+                            End User Name
+                        </div>
+                        <input type="text" id="EndCustomerName" name="EndCustomerName" value="@ViewBag.EndCustomerName" class="form-control" readonly="readonly" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="subheading">
+                            Quote Validity
+                            <hr>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 col-md-6 form-group">
+                        <div class="control-label">
+                            Valid From
+                        </div>
+                        <input id="PromoFromDatetime" required class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@Model.PromoFromDatetime">
+                    </div>
+                    <div class="col-sm-6 col-md-6 form-group">
+                        <div class="control-label">
+                            Valid To
+                        </div>
+                        <input id="PromolToDatetime" required class="form-control" name="PromolToDatetime" placeholder="Select date" value="@Model.PromolToDatetime">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--------------------------------------------- New panel --------------------------------------------->
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3 class="panel-title">Add/Edit Product For Quote</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <span class="k-widget k-tooltip k-tooltip-validation k-invalid-msg hide" id="vGridItem" data-for="Grid" role="alert"><span class="k-icon k-i-warning"> </span> At least one SKU is required</span>
+                <div id="Grid" />
+            </div>
+        </div>
+        <!--------------------------------------------- New panel --------------------------------------------->
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="pull-right ">
+                        <div id="divSubmitSpinner" class="spinnerSubmit" style="display:none;">
+                            <img id="img-spinner" src="/Content/Images/ajax-loader-small.GIF">
+                        </div>
+                        <div id="SubmitButtons" style="margin-right: 15px; visibility: visible;">
+                            <div id="divPdfHistory" class="btn-group" style="visibility:hidden;">
+                                <button type="button" id="btnGeneratePDF" class="btn btn-primary">Generate PDF</button>
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" id="versionHistory"></ul>
+                            </div>
+                            <input type="button" value="Delete" name="Delete" data-command="quote.delete" id="btnDeleteQuote" class="btn btn-primary command">
+                            <input type="button" value="Copy" name="Copy" data-command="quote.copy" id="btnCopy" class="btn btn-primary command">
+                            <input type="button" value="Save" name="Save" data-command="quote.save" id="btnSave" class="btn btn-primary command">
+                            <input type="button" value="Submit" name="Submit" data-command="quote.submit" id="btnSubmit" class="btn btn-primary command">
+                        </div>
+
+                    </div>
+                    <div class="pull-left">
+                        <div class="col-md-12">
+                            <input type="hidden" value="" id="hdnCommand" name="hdnCommand" data-source-referrer="WorkList">
+                            <div id="valerrors" class="alert alert-danger" role="alert" style="display: none; width: 860.969px;"></div>
+
+                            <div id="valsuccess" class="alert alert-success" role="alert" style="display: none; width: 860.969px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--------------------------------------------- New panel --------------------------------------------->
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h3 class="panel-title">Comments and Attachments</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-6 col-md-6 form-group">
+                        <div class="subheading">
+                            Public Comments
+                            <hr>
+                        </div>
+                        <div class="control-label">
+                            Add New Comments
+                        </div>
+                        <textarea rows="4" cols="45" id="publicComment"></textarea>
+                    </div>
+                    <div class="col-sm-6 col-md-6 form-group">
+                        <div class="subheading">
+                            Public Attachments
+                            <hr>
+                        </div>
+                        <div><input type="file" id="publicAttachment" name="publicAttachment" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    var hiddenColumns = {};
+    hiddenColumns["PM"] = "";
+    var skuDataSource = [{ "ProductNumber": "SDMSM2-002G-A11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-AMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G-AMNO, Card only, Retail, Mob", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-BM", "ProductLine": "MS-Micro", "Description": "SDMSM2-2048, Card only w/JC, Retail, Bul", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-BMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only w/JC, Retail, Bul", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-C11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-E11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-E12M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-EMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G-EMNO, Card only, Retail, MNO", "MemoryCapacity": "2GB", "ListPrice": 0 }];
+    var getGridColumns = function () {
+        return [
+            {
+                title: "",
+                template: '<input type="checkbox" class="rsm" name="Selected" data-productNumber="#=productNumber#" data-id="#=quoteItemID#"></input>',
+                width: 30
+            },
+            {
+                field: "productNumber",
+                title: "SKU",
+                editor: editSku,
+            },
+            {
+                field: "requestedQuantity",
+                title: "Quantity",
+                editor: editNumber,
+            },
+            {
+                field: "msrp",
+                title: "MSRP",
+                hidden: true
+            },
+            {
+                field: "listPrice",
+                title: "Price List",
+                template1: '<input type="text" class="rsm" name="listPrice" value="#=listPrice#"></input>',
+            },
+            {
+                field: "requestedPOS",
+                title: "Req. POS",
+                template1: '<input type="text" class="rsm" name="requestedPOS" value="#=requestedPOS#"></input>',
+            },
+            {
+                field: "requestedNetPrice",
+                title: "Req. Net Price",
+                editor: editNumber,
+            },
+            {
+                field: "estimatedRevenue",
+                title: "Est. Rev.",
+            },
+            {
+                field: "estimatedDiscount",
+                title: "Est. Discount",
+            },
+            {
+                field: "pmRedLine",
+                title: "PM RedLine",
+                template: "#= pmRedLine>0 ? pmRedLine : '' #",
+                hidden: true
+            },
+            {
+                field: "pmApprovedPrice",
+                title: "PM ApprovedPrice",
+                template: '<input type="text" class="pm readonly" name="pmApprovedPrice" value="#=pmApprovedPrice#"></input>',
+                hidden: true
+            },
+            {
+                field: "peRedLine",
+                title: "PE RedLine",
+                template: "#= peRedLine>0 ? peRedLine : '' #",
+                hidden: true
+            },
+            {
+                field: "peApprovedPrice",
+                title: "PE ApprovedPrice",
+                template: '<input type="text" class="poe readonly" name="peApprovedPrice" value="#=peApprovedPrice#"></input>',
+                hidden: true
+            },
+            {
+                field: "vpFinanceApprovedPrice",
+                title: "ApprovedPrice",
+                template: '<input type="text" class="vpfinance readonly" name="vpFinanceApprovedPrice" value="#=vpFinanceApprovedPrice#"></input>',
+                hidden: true
+            }
+        ]
+    }
+    var getGridColumnsRSMAccept = function () {
+        return [
+            {
+                title: "",
+                template: '<input type="checkbox" class="rsm" readonly disabled name="Selected" data-productNumber="#=productNumber#" data-id="#=quoteItemID#"></input>',
+                width: 30
+            },
+            {
+                field: "productNumber",
+                title: "SKU",
+                editor: editSku,
+            },
+            {
+                field: "requestedQuantity",
+                title: "Quantity",
+                editor: editNumber,
+            },
+            {
+                field: "msrp",
+                title: "MSRP",
+                hidden: true
+            },
+            {
+                field: "listPrice",
+                title: "Price List",
+                template1: '<input type="text" class="rsm" name="listPrice" value="#=listPrice#"></input>',
+            },
+            {
+                field: "requestedPOS",
+                title: "Req. POS",
+                template1: '<input type="text" class="rsm" name="requestedPOS" value="#=requestedPOS#"></input>',
+            },
+            {
+                field: "requestedNetPrice",
+                title: "Req. Net Price",
+                editor: editNumber,
+            },
+            {
+                field: "estimatedRevenue",
+                title: "Est. Rev.",
+            },
+            {
+                field: "estimatedDiscount",
+                title: "Est. Discount",
+            },
+            {
+                field: "pmRedLine",
+                title: "PM RedLine",
+                template: "#= pmRedLine>0 ? pmRedLine : '' #",
+                hidden: true
+            },
+            {
+                field: "pmApprovedPrice",
+                title: "PM ApprovedPrice",
+                template: '<input type="text" class="pm readonly" name="pmApprovedPrice" value="#=pmApprovedPrice#"></input>',
+                hidden: true
+            },
+            {
+                field: "peRedLine",
+                title: "PE RedLine",
+                template: "#= peRedLine>0 ? peRedLine : '' #",
+                hidden: true
+            },
+            {
+                field: "peApprovedPrice",
+                title: "PE ApprovedPrice",
+                template: '<input type="text" class="poe readonly" name="peApprovedPrice" value="#=peApprovedPrice#"></input>',
+                hidden: true
+            },
+            {
+                field: "winQuantity",
+                title: "Win Qty",
+                template: "#= winQuantity>0 ? winQuantity : '' #",
+            },
+            {
+                field: "winNetPrice",
+                title: "Win Price",
+                template: "#= winNetPrice>0 ? winNetPrice : '' #",
+            },
+            {
+                field: "vpFinanceApprovedPrice",
+                title: "ApprovedPrice",
+                template: '<input type="text" class="vpfinance readonly" name="vpFinanceApprovedPrice" value="#=vpFinanceApprovedPrice#"></input>'
+            }
+        ]
+    }
+    $(document).ready(function () {
+
+        var dtpkNeedPriceApprovedBy = $("#NeedPriceApprovedBy").kendoDatePicker({
+            culture: "en-US",
+            change: function (e) { },
+            format: "MMM dd, yyyy",
+        }).data("kendoDatePicker");
+        var dtpkPromoFromDatetime = $("#PromoFromDatetime").kendoDatePicker({
+            culture: "en-US",
+            change: function (e) { },
+            format: "MMM dd, yyyy",
+        }).data("kendoDatePicker");
+        var dtpkPromolToDatetime = $("#PromolToDatetime").kendoDatePicker({
+            culture: "en-US",
+            change: function (e) { },
+            format: "MMM dd, yyyy",
+        }).data("kendoDatePicker");
+
+        dtpkNeedPriceApprovedBy.enable(!app.isReadonly);
+        dtpkPromolToDatetime.enable(!app.isReadonly);
+        dtpkPromoFromDatetime.enable(!app.isReadonly);
+
+        $(function () {
+            var focusedElement;
+            $(document).on('focus', 'td[role=gridcell] input', function () {
+                if (focusedElement == this) return; //already focused, return so user can now place cursor at specific point in input.
+                focusedElement = this;
+                setTimeout(function () { focusedElement.select(); }, 50); //select all text in any field on focus for easy re-entry. Delay sightly to allow focus to "stick" before selecting.
+            });
+
+
+            $(document).on('change', 'td[role=gridcell] input', function () {
+                var field = $(this).attr('name');
+                var grid = $("#Grid").data('kendoGrid');
+                var row = $(this).closest("tr");
+                var dataItem = grid.dataItem(row);
+                grid.dataItem(row).dirty = true;
+                grid.dataItem(row)[field] = $(this).val();
+                console.log('dataItem', dataItem);
+            });
+        });
+        var gridToolbar = app.QuoteStatusResultID == 12 ? ["create", "destroy"] : null;
+        var columns = getGridColumns();
+        switch (app.QuoteStatusResultID) {
+            case 14:
+                columns = getGridColumnsRSMAccept();
+                break;
+        }
+        var url = "/api/quoteitems/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        $("#Grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: url
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            quoteItemID: {
+                                type: "number",
+                                editable: false,
+                            },
+                            productNumber: {
+                                type: "string",
+                                editable: true,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            requestedQuantity: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            msrp: {
+                                type: "number",
+                                editable: false,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            listPrice: {
+                                type: "number",
+                                editable: false,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            requestedPOS: {
+                                type: "number",
+                                editable: true,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+
+                            productCost: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            winLoss: {
+                                type: "string",
+                                editable: false,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            winQuantity: {
+                                type: "number",
+                                editable: true,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            winNetPrice: {
+                                type: "number",
+                                editable: true,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            winPOS: {
+                                type: "string",
+                                editable: false,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            requestedNetPrice: {
+                                type: "number",
+                                editable: true,
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+
+                            pmRedLine: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            pmApprovedPrice: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            peRedLine: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            peApprovedPrice: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            vpFinanceApprovedPrice: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data == "" || data == undefined || data == 999999 || data == 'null') {
+                                        return '';
+                                    }
+                                    return data;
+                                }
+                            },
+                            estimatedRevenue: {
+                                type: "number",
+                                editable: true,
+                            },
+                            estimatedDiscount: {
+                                type: "number",
+                                editable: true
+                            }
+                        }
+                    }
+                },
+                pageSize: 20,
+            },
+            height: 550,
+            sortable: true,
+            pageable: true,
+            editable: true,
+            toolbar: gridToolbar,
+            edit: onEdit1,
+            dataBound: function (e) {
+
+            },
+            columns: columns
+        });
+
+        //var hiddenColumns = {};
+        //hiddenColumns["PM"] = ["peRedLine", "peApprovedPrice", "vpFinanceApprovedPrice"];
+        //hiddenColumns["POE"] = ["vpFinanceApprovedPrice"];
+        //hiddenColumns["VP FINANCE"] = [];
+
+        //var grid = $("#Grid").data("kendoGrid");
+        //$.each(hiddenColumns[app.role], function (i, val) {
+        //    grid.hideColumn(val);
+        //});
+
+        $("#kCustomers").kendoAutoComplete({
+            filter: "contains",
+            minLength: 3,
+            placeholder: "Type 3 letters to begin search",
+            dataTextField: "customerNumber",
+            select: onSoldToSelect
+        });
+
+        $("#Tier2CustomerId").kendoAutoComplete({
+            filter: "contains",
+            minLength: 3,
+            placeholder: "Type 3 letters to begin search",
+            dataTextField: "customerNumber",
+            select: onTier2CustomerSelect
+        });
+
+        $("#EndCustomerId").kendoAutoComplete({
+            filter: "contains",
+            minLength: 3,
+            placeholder: "Type 3 letters to begin search",
+            dataTextField: "customerNumber",
+            select: onEndstomerSelect,
+        });
+        if (app.QuoteStatusResultID == 14) {
+            $("#kddlAccountManager").kendoDropDownList({
+                autoBind: false,
+                text: '@ViewBag.AccountManagerName'
+            });
+
+        }
+        else {
+            $("#kddlAccountManager").kendoDropDownList({
+                dataTextField: "userName",
+                dataValueField: "userID",
+            });
+        }
+        $("#publicAttachment").kendoUpload({
+            async: {
+                saveUrl: "",
+                removeUrl: "remove",
+                autoUpload: true
+            },
+            complete: onPublicCompleteSucess,
+            multiple: true,
+            localization: {
+                select: "Select files"
+            },
+            template: kendo.template($('#publicTemplate').html()),
+            upload: function (e) {
+
+            },
+            remove: onFileRemove
+        });
+
+    });
+    function onPublicCompleteSucess(e) {
+        console.log("log: file sucessfully uploaded");
+    }
+
+    function onFileRemove(e) {
+        console.log("log: file remove");
+    }
+    function onEdit1(e) {
+        //var c = e.container.find('input[name=requestedPOS]');
+        //var c = e.container.find('input[name=requestedPOS]');
+        if (e.container.find('input[name=requestedPOS]').length || e.container.find('input[name=estimatedRevenue]').length || e.container.find('input[name=estimatedDiscount]').length) {
+            this.closeCell();
+        }
+    }
+    $('#Grid').on('keyup', '.k-input:not(#ProductNumber)', onEdit);
+    function onEdit(e) {
+        console.log('onEdit - e', e);
+        console.log('onEdit - $(this)', $(this));
+        //console.log('keyup', e, $(this), $(this)[0].dataset.bind, $(this)[0].dataset.bind.replace('value:', ''), e);
+        var field = $.trim($(this)[0].dataset.bind.replace('value:', ''));
+
+        var row = $(this).closest("tr");
+
+        var grid = $("#Grid").data('kendoGrid');
+        var dataItem = grid.dataItem(row);
+        console.log('keyup - dataItem', dataItem);
+
+        var listPrice = grid.dataItem(row)['listPrice'];
+        listPrice = listPrice == '' ? 0 : parseFloat(listPrice, 10);
+
+        var requestedQuantity = grid.dataItem(row)['requestedQuantity'];
+        requestedQuantity = requestedQuantity == '' ? 0 : parseInt(requestedQuantity, 10);
+        requestedQuantity = field == 'requestedQuantity' ? parseInt($(this).val(), 10) : requestedQuantity;
+
+        var requestedNetPrice = grid.dataItem(row)['requestedNetPrice'];
+        requestedNetPrice = requestedNetPrice == '' ? 0 : parseFloat(requestedNetPrice, 10);
+        requestedNetPrice = field == 'requestedNetPrice' ? parseInt($(this).val(), 10) : requestedNetPrice;
+
+        var requestedPOS = grid.dataItem(row)['requestedPOS'];
+        requestedPOS = requestedPOS == '' ? 0 : parseFloat(requestedPOS, 10);
+        requestedPOS = listPrice - requestedNetPrice;
+
+        var estimatedRevenue = 0.0, estimatedDiscount = 0.0;
+
+        estimatedRevenue = requestedNetPrice * requestedQuantity;
+        estimatedDiscount = requestedPOS * requestedQuantity;
+        switch (field) {
+            case 'requestedQuantity':
+                break;
+            case 'requestedNetPrice':
+                break;
+        }
+
+        console.log('updates----------');
+        console.log('requestedQuantity', requestedQuantity);
+        console.log('requestedNetPrice', requestedNetPrice);
+        console.log('requestedPOS', requestedPOS);
+        console.log('estimatedRevenue', estimatedRevenue);
+        console.log('estimatedDiscount', estimatedDiscount);
+        grid.dataItem(row).dirty = true;
+        grid.dataItem(row).set('requestedQuantity', requestedQuantity);
+        grid.dataItem(row).set('requestedNetPrice', requestedNetPrice);
+        grid.dataItem(row).set('requestedPOS', requestedPOS);
+        grid.dataItem(row).set('estimatedRevenue', estimatedRevenue);
+        grid.dataItem(row).set('estimatedDiscount', estimatedDiscount);
+        //grid.refresh();
+
+    };
+    function editNumber(container, options) {
+        $('<input data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoNumericTextBox({
+                spinners: false,
+                change: function (e) {
+                    console.log('kendoNumericTextBox', e); //value is the selected date in the numerictextbox
+                    var value = this.value();
+                    console.log(value); //value is the selected date in the numerictextbox
+                }
+            });
+    }
+
+    function editSku(container, options) {
+        console.log('container, options', container, options);
+        var url = "/api/Quotes/products/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        $('<input id="ProductNumber" name="ProductNumber" data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoAutoComplete({
+                minLength: 3,
+                filter: "contains",
+                dataTextField: "ProductNumber",
+                dataSource: skuDataSource,
+                headerTemplate: '<div class="dropdown-header k-widget k-header">' +
+                '<div class="row">' +
+                '<div class="col-md-11">SKU</div>' +
+                '</div>' +
+                '</div>',
+                footerTemplate: 'Total #: instance.dataSource.total() # items found',
+                template: '<div class="row">' +
+                '<div class="col-md-11 cost-item" data-price="#=data.prc_Lst_Su#">#: data.material #</div>' +
+                '</div>',
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: url,
+                            data: {
+                                keyword: function () {
+                                    return $("#ProductNumber").data("kendoAutoComplete").value();
+                                }
+                            }
+                        }
+                    },
+                    serverFiltering: true,
+                },
+                height: 400,
+                select: function (e) {
+                    var item = e.item;
+                    var priceList = $.trim($('div.cost-item', $(e.item)).data().price);
+                    //console.log('priceList', priceList);
+                    var text = item.text();
+                    //console.log(e.item);
+                    //console.log(text);
+                    //console.log($(e.sender.wrapper).parents('td'))
+                    $("#ProductNumber").data("kendoAutoComplete").value(text);
+
+                    var grid = $("#Grid").data('kendoGrid');
+                    var row = $(e.sender.wrapper).parents('td').closest("tr");
+                    var dataItem = grid.dataItem(row);
+                    grid.dataItem(row).dirty = true;
+                    grid.dataItem(row)['productNumber'] = text;
+                    grid.dataItem(row)['listPrice'] = priceList;
+                    grid.dataItem(row)['requestedNetPrice'] = priceList;
+                    //console.log('dataItem', dataItem);
+                    grid.refresh();
+                }
+            }).data("kendoAutoComplete");
+    }
+    function onSoldToSelect(e) {
+        var dataItem = this.dataItem(e.item.index());
+        if (dataItem != undefined) {
+            $("#PlanningAccountName").val(dataItem.customer_Desc);
+            $("#Currency").val(dataItem.currency);
+        }
+
+        var ddl = $("#kddlAccountManager").data("kendoDropDownList");
+        var dsAccountManager = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/api/Quotes/getaccountmanager"
+                }
+            }
+        });
+        ddl.setDataSource(dsAccountManager);
+        ddl.value(app.userId);
+    }
+
+    function onTier2CustomerSelect(e) {
+        var dataItem = this.dataItem(e.item.index());
+        if (dataItem != undefined) {
+            $("#Tier2CustomerName").val(dataItem.customer_Desc);
+        }
+    }
+
+    function onEndstomerSelect(e) {
+        var dataItem = this.dataItem(e.item.index());
+        if (dataItem != undefined) {
+            $("#EndCustomerName").val(dataItem.customer_Desc);
+        }
+    }
+
+    $("#kCustomers").on("keyup", function (e) {
+        var srchText = $("#kCustomers").val();
+        if (srchText.length > 2) {
+            var autoCompleteSoldTo = $("#kCustomers").data("kendoAutoComplete");
+            var dsSoldTo = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/api/Quotes/getcustomer" + "/" + app.role + "/" + srchText
+                    }
+                }
+            });
+            autoCompleteSoldTo.setDataSource(dsSoldTo);
+        }
+    });
+    $("#Tier2CustomerId").on("keyup", function (e) {
+        var srchText = $("#Tier2CustomerId").val();
+        if (srchText.length > 2) {
+            var autoCompleteTier2Cust = $("#Tier2CustomerId").data("kendoAutoComplete");
+            var dsTier2Cust = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/api/Quotes/gettier2customer" + "/" + app.role + "/" + srchText
+                    }
+                }
+            });
+            autoCompleteTier2Cust.setDataSource(dsTier2Cust);
+        }
+    });
+    $("#EndCustomerId").on("keyup", function (e) {
+        var srchText = $("#EndCustomerId").val();
+        if (srchText.length > 2) {
+            var autoCompleteEndCustomer = $("#EndCustomerId").data("kendoAutoComplete");
+            var dsEndCustomer = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "/api/Quotes/gettier2customer" + "/" + app.role + "/" + srchText
+                    }
+                }
+            });
+            autoCompleteEndCustomer.setDataSource(dsEndCustomer);
+        }
+    });
+
+    function validateQuote() {
+        var isValidQ = $('#frm').kendoValidator().data("kendoValidator").validate();
+        var isValidQi = validateQuoteItems();
+        return isValidQ && isValidQi;
+        //var model = $('#frm').serializeArray().reduce(function (m, o) { m[o.name] = m[o.name] ? m[o.name] + ',' + o.value : o.value; return m; }, {});
+        //var model = $('#frm').serializeArray().reduce(function (m, o) { m[o.name] = m[o.name] ? m[o.name] + ',' + o.value : o.value; return m; }, {});
+    }
+    function validateQuoteItems() {
+        var isValid = $('#Grid').data('kendoGrid').dataSource.data().length > 0;
+        if (isValid) {
+            $('#vGridItem').addClass('hide');
+        }
+        else {
+            $('#vGridItem').removeClass('hide');
+        }
+        return isValid;
+    }
+    function saveModel(mode) {
+        var model = $('#frm').serializeArray().reduce(function (m, o) { m[o.name] = m[o.name] ? m[o.name] + ',' + o.value : o.value; return m; }, {});
+        model.QuoteStatusResultID = mode == 0 ? 12 : 1;
+        model.QuoteStatusLevelID = mode == 0 ? 2 : 6;
+        model.QuoteItem = [];
+        var ds = $("#Grid").data('kendoGrid').dataSource;
+        $.each(ds.data(), function (i, val) {
+            //if (val.dirty) {
+            model.QuoteItem.push(val);
+            //}
+        });
+        var api = "/api/quotes/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        $.ajax({
+            url: api,
+            type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify(model),
+            success: function (result) {
+                console.log(result);
+                if (mode == 0) {
+                    if (app.quoteNumber != "") {
+                        window.location.href = "/Quotes/Create/" + app.userId + '/' + app.role + '/' + app.quoteNumber;
+                    }
+                    else {
+                        window.location.href = "/Quotes/Create/" + app.userId + '/' + app.role + '/' + result.quoteNumber;
+                    }
+                }
+                else {
+                    //Home/Index/32994/RSM
+                    window.location.href = "/Home/Index/" + app.userId + '/' + app.role;
+                }
+                //window.location.href = "/Home/Index/" + app.userId + '/' + app.role;
+                //dfd.resolve({ Success: true, Result: result });
+            },
+            error: function (xhr) {
+                //dfd.resolve({
+                //    Success: false, Message: "Something went wrong..!!!"
+                //});
+            }
+        });
+        return false;
+
+    }
+
+    function acceptQuote() {
+        var postData = [];
+        var ds = $("#Grid").data('kendoGrid').dataSource;
+        $.each(ds.data(), function (i, val) {
+            if (val.dirty) {
+                postData.push(val);
+            }
+        });
+        var api = "/api/quoteitems/accept/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        $.ajax({
+            url: api,
+            type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify(postData),
+            success: function (result) {
+                window.location.href = "/Home/Index/" + app.userId + '/' + app.role;
+            },
+            error: function (xhr) {
+            }
+        });
+        return false;
+    }
+    $(document).on('quote.copy', function (e) {
+        alert('copied');
+    });
+    $(document).on('quote.submit', function (e) {
+        if (!validateQuote()) return false;
+        if (app.QuoteStatusResultID == 14) {
+            acceptQuote();
+        }
+        else {
+            saveModel(1);
+        }
+    });
+    $(document).on('quote.save', function (e) {
+        if (!validateQuote()) return false;
+        saveModel(0);
+    });
+    $(document).on('quote.accept', function (e) {
+        acceptQuote();
+    });
+    $(document).on('quote.delete', function (e) {
+        alert('deleted');
+    });
+
+    $(document).on('click', '.command', function (e) {
+        e.preventDefault();
+        $(document).trigger($(this).data().command);
+    });
+</script>
+<script id="publicTemplate" type="text/x-kendo-temple">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-lg-6">
+                <a href="">#=name#</a>
+            </div>
+            <div class="col-lg-4">
+                <button type='button' class='k-upload-action'></button>
+            </div>
+        </div>
+    </div>
+</script>

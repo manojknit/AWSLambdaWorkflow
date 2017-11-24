@@ -1,0 +1,312 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Http.Extensions
+@inject IHttpContextAccessor HttpContextAccessor
+@model iPromo.Entities.Quote
+@{
+    ViewData["Title"] = "Details";
+    var ss = HttpContextAccessor.HttpContext.Request.GetDisplayUrl().ToLower().Contains("/readonly/");
+    var isReadOnly = (!HttpContextAccessor.HttpContext.Request.GetDisplayUrl().ToLower().Contains("/readonly/") || ViewBag.Role == "RSM" || ViewBag.QuoteNumber == null) ? string.Empty : "readonly=\"readonly\"";
+
+    string statusStyle = StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)];
+    statusStyle = System.Text.RegularExpressions.Regex.Replace(statusStyle, @"\s", "").ToLower();
+
+    string roleStyle = StaticItems.QuoteStatusLevel[(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)];
+    roleStyle = System.Text.RegularExpressions.Regex.Replace(ViewBag.Role, @"\s", "").ToLower();
+
+}
+<script type="text/javascript">
+        var app = app || {};
+    app.quoteNumber = '@ViewBag.QuoteNumber';
+    app.isReadonly = '@(isReadOnly!=string.Empty)'.toLowerCase() == "true" || window.location.href.toLowerCase().indexOf("/readonly/") > -1;
+</script>
+<div class="container">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3 class="panel-title">SPA/TPM Quote</h3>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Quote Number
+                    </div>
+                    <input type="text" class="form-control" @isReadOnly id="QuoteNumber" name="QuoteNumber" value="@Model.QuoteNumber">
+                </div>
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Quote Status
+                    </div>
+                    <div class="btn-sm form-control status-@statusStyle">@string.Format("{0} ({1})", StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)], StaticItems.QuoteStatusLevel[(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)])</div>
+
+                </div>
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Submit Date
+                    </div>
+                    <input type="text" class="form-control " @isReadOnly id="SubmitDatetime" name="SubmitDatetime" value="@(Model.SubmitDatetime.HasValue?Model.SubmitDatetime.Value.ToString("MMM dd, yyyy"):"")" />
+
+                </div>
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Submit By
+                    </div>
+                    <input type="text" class="form-control " @isReadOnly id="SubmittedByUserName" name="SubmittedByUserName" value="@Model.SubmittedByUserID" />
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 col-md-12">
+                    <div class="row">
+                        <div class="col-sm-12 col-md-9 form-group">
+                            <div class="control-label">
+                                Quote Description
+                            </div>
+                            <input type="text" @isReadOnly class="form-control " id="TPBackground" name="TPBackground" placeholder="Type a value" value="@Model.TPBackground" />
+
+                        </div>
+                        <div class="col-sm-6 col-md-3 form-group">
+                            <div class="control-label">
+                                Need Price Approved By
+                            </div>
+                            <input type="text" class="form-control " @isReadOnly id="NeedPriceApprovedBy" name="NeedPriceApprovedBy" value="@(Model.NeedPriceApprovedBy.HasValue?Model.NeedPriceApprovedBy.Value.ToString("MMM dd, yyyy"):"")" />
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="subheading">
+                        Account Information
+                        <hr>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Sold To #
+                    </div>
+                    <input type="text" @isReadOnly id="kCustomers" name="kCustomers" class="form-control" value="@Model.PlanningAccountNumber" />
+                </div>
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Sold To Name
+                    </div>
+                    <input id="PlanningAccountName" class="form-control" type="text" @isReadOnly name="PlanningAccountName" />
+
+                </div>
+                <div class="col-sm-6 col-md-3 form-group">
+                    <div class="control-label">
+                        Currency
+                    </div>
+                    <input id="Currency" type="text" class="form-control" @isReadOnly name="Currency" value="@Model.Currency" />
+
+                </div>
+                <div class="col-sm-6 col-md-3 form-group-xs form-group">
+                    <div class="control-label">
+                        Account Manager
+                    </div>
+                    <input id="kddlAccountManager" class="form-control" name="kddlAccountManager" placeholder="Select Account Manager" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-md-6  form-group">
+                    <div class="control-label">
+                        Tier 2 Customer #
+                    </div>
+                    <input type="text" id="EndCustomerName" class="form-control" name="EndCustomerName" @isReadOnly value="@Model.EndCustomerID" />
+                </div>
+                <div class="col-sm-6 col-md-6 form-group">
+                    <div class="control-label">
+                        End User
+                    </div>
+                    <input type="text" id="EndCustomerName" class="form-control" name="EndCustomerName" @isReadOnly value="@Model.EndUser" />
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="subheading">
+                        Quote Validity
+                        <hr>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6 col-md-6 form-group">
+                    <div class="control-label">
+                        Valid From
+                    </div>
+                    <input id="PromoFromDatetime" class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@Model.PromoFromDatetime">
+                </div>
+                <div class="col-sm-6 col-md-6 form-group">
+                    <div class="control-label">
+                        Valid To
+                    </div>
+                    <input id="PromolToDatetime" class="form-control" name="PromolToDatetime" placeholder="Select date" value="@Model.PromolToDatetime">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--------------------------------------------- New panel --------------------------------------------->
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3 class="panel-title">Add/Edit Product For Quote</h3>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div id="Grid" />
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var hiddenColumns = {};
+    hiddenColumns["PM"] = "";
+    hiddenColumns["PM"] = "";
+
+    $(document).ready(function () {
+
+        var dtpkPromoFromDatetime = $("#PromoFromDatetime").kendoDatePicker({
+            culture: "en-US",
+            change: function (e) { },
+        }).data("kendoDatePicker");
+
+        var dtpkPromolToDatetime = $("#PromolToDatetime").kendoDatePicker({
+            culture: "en-US",
+            change: function (e) { },
+        }).data("kendoDatePicker");
+
+        dtpkPromolToDatetime.enable(!app.isReadonly);
+        dtpkPromoFromDatetime.enable(!app.isReadonly);
+
+        var url = "/api/quoteitems/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        $("#Grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: url
+                },
+                schema: {
+                    model: {
+                        fields: {
+                            productNumber: { type: "string" },
+                            requestedQuantity: { type: "number" },
+                            msrp: { type: "number" },
+                            listPrice: { type: "number" },
+                            requestedPOS: { type: "number" },
+
+                            productCost: { type: "number" },
+                            winLoss: { type: "string" },
+                            winQuantity: { type: "number" },
+                            winNetPrice: { type: "number" },
+                            winPOS: { type: "string" },
+                            requestedNetPrice: { type: "number" },
+
+                            pmRedLine: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data != "" && data != undefined && data == 999999) {
+                                        return 0;
+                                }
+                                return data;
+                                }
+                            },
+                            pmApprovedPrice: { type: "number" },
+                            peRedLine: {
+                                type: "number",
+                                parse: function (data) {
+                                    if (data != "" && data != undefined && data == 999999) {
+                                        return 0;
+                                    }
+                                    return data;
+                                }
+                            },
+                            peApprovedPrice: { type: "number" },
+                            vpFinanceApprovedPrice: { type: "number" }
+                        }
+                    }
+                },
+                pageSize: 20,
+            },
+            height: 550,
+            sortable: true,
+            pageable: true,
+            columns: [{
+                field: "productNumber",
+                title: "SKU"
+            },
+            {
+                field: "requestedQuantity",
+                title: "Quantity"
+            },
+            {
+                field: "msrp",
+                title: "MSRP"
+            },
+            {
+                field: "listPrice",
+                title: "Price List"
+            },
+            {
+                field: "requestedPOS",
+                title: "Req. POS"
+            },
+            {
+                field: "requestedNetPrice",
+                title: "Req. Net Price"
+            },
+            {
+                field: "pmRedLine",
+                title: "PM RedLine",
+                template: "#= pmRedLine>0 ? pmRedLine : '' #"
+            },
+            {
+                field: "pmApprovedPrice",
+                title: "PM ApprovedPrice",
+                template: '<input type="text" class="pm readonly" name="pmApprovedPrice" value="#=pmApprovedPrice#"></input>',
+            },
+            {
+                field: "peRedLine",
+                title: "PE RedLine",
+                template: "#= peRedLine>0 ? peRedLine : '' #"
+            },
+            {
+                field: "peApprovedPrice",
+                title: "PE ApprovedPrice",
+                template: '<input type="text" class="poe readonly" name="peApprovedPrice" value="#=peApprovedPrice#"></input>',
+            },
+            {
+                field: "vpFinanceApprovedPrice",
+                title: "ApprovedPrice",
+                template: '<input type="text" class="vpfinance readonly" name="vpFinanceApprovedPrice" value="#=vpFinanceApprovedPrice#"></input>',
+            }
+            ]
+        });
+
+
+
+        var hiddenColumns = {};
+        hiddenColumns["PM"] = ["peRedLine", "peApprovedPrice", "vpFinanceApprovedPrice"];
+        hiddenColumns["POE"] = ["vpFinanceApprovedPrice"];
+        hiddenColumns["VP FINANCE"] = [];
+
+        var grid = $("#Grid").data("kendoGrid");
+        $.each(hiddenColumns[app.role], function (i, val) {
+            grid.hideColumn(val);
+        });
+    });
+</script>

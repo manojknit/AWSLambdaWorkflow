@@ -3,7 +3,7 @@
 
 
     ViewData["Title"] = "Details";
-    var isReadOnly = (ViewBag.Role == "RSM" || ViewBag.QuoteNumber == null) ? string.Empty : "readonly=\"readonly\"";
+    var isReadOnly = (ViewBag.Role == "RSM" && Model.QuoteStatusResultID.HasValue && Model.QuoteStatusResultID == 14) ? "readonly=\"readonly\"" : string.Empty;
 
     string statusStyle = StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)];
     statusStyle = System.Text.RegularExpressions.Regex.Replace(statusStyle, @"\s", "").ToLower();
@@ -90,7 +90,7 @@
                         <div class="control-label">
                             Sold To #
                         </div>
-                        <input type="text" id="kCustomers" name="PlanningAccountNumber" class="form-control" required value="@Model.PlanningAccountNumber" @isReadOnly style="width: 100%;" />
+                        <input type="text" id="kCustomers" name="PlanningAccountNumber" class="@(isReadOnly.Length > 0 ? "form-control graybgcolor" : "form-control" )" required value="@Model.PlanningAccountNumber" @isReadOnly style="width: 100%;" />
                     </div>
                     <div class="col-sm-6 col-md-3 form-group">
                         <div class="control-label">
@@ -118,7 +118,7 @@
                         <div class="control-label">
                             Tier 2 Customer #
                         </div>
-                        <input type="text" id="Tier2CustomerId" required name="EndCustomerID" class="form-control" value="@Model.EndCustomerID" @isReadOnly style="width: 100%;" />
+                        <input type="text" id="Tier2CustomerId" required name="EndCustomerID" class="@(isReadOnly.Length > 0 ? "form-control graybgcolor" : "form-control" )" value="@Model.EndCustomerID" @isReadOnly style="width: 100%;" />
                     </div>
                     <div class="col-sm-6 col-md-3 form-group">
                         <div class="control-label">
@@ -130,7 +130,7 @@
                         <div class="control-label">
                             End User #
                         </div>
-                        <input type="text" id="EndCustomerId" required name="EndUser" class="form-control" value="@Model.EndUser" @isReadOnly style="width: 100%;" />
+                        <input type="text" id="EndCustomerId" name="EndUser" class="@(isReadOnly.Length > 0 ? "form-control graybgcolor" : "form-control" )" value="@Model.EndUser" @isReadOnly style="width: 100%;" />
                     </div>
                     <div class="col-sm-6 col-md-3 form-group-xs form-group">
                         <div class="control-label">
@@ -152,13 +152,13 @@
                         <div class="control-label">
                             Valid From
                         </div>
-                        <input id="PromoFromDatetime" required class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@Model.PromoFromDatetime">
+                        <input id="PromoFromDatetime" required class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@(Model.PromoFromDatetime.HasValue?Model.PromoFromDatetime.Value.ToString("MMM dd, yyyy"):"")">
                     </div>
                     <div class="col-sm-6 col-md-6 form-group">
                         <div class="control-label">
                             Valid To
                         </div>
-                        <input id="PromolToDatetime" required class="form-control" name="PromolToDatetime" placeholder="Select date" value="@Model.PromolToDatetime">
+                        <input id="PromolToDatetime" required class="form-control" name="PromolToDatetime" placeholder="Select date" value="@(Model.PromolToDatetime.HasValue?Model.PromolToDatetime.Value.ToString("MMM dd, yyyy"):"")">
                     </div>
                 </div>
             </div>
@@ -183,7 +183,7 @@
                 <div class="row">
                     <div class="pull-right ">
                         <div id="divSubmitSpinner" class="spinnerSubmit" style="display:none;">
-                            <img id="img-spinner" src="/Content/Images/ajax-loader-small.GIF">
+                            <img id="img-spinner" src="~/kendo/styles/BlueOpal/loading-image.gif">
                         </div>
                         <div id="SubmitButtons" style="margin-right: 15px; visibility: visible;">
                             <div id="divPdfHistory" class="btn-group" style="visibility:hidden;">
@@ -193,9 +193,15 @@
                                 </button>
                                 <ul class="dropdown-menu" id="versionHistory"></ul>
                             </div>
+                            @if (statusStyle != "inq-winloss")
+                            {
                             <input type="button" value="Delete" name="Delete" data-command="quote.delete" id="btnDeleteQuote" class="btn btn-primary command">
-                            <input type="button" value="Copy" name="Copy" data-command="quote.copy" id="btnCopy" class="btn btn-primary command">
+                            }
+                            @*<input type="button" value="Copy" name="Copy" data-command="quote.copy" id="btnCopy" class="btn btn-primary command">*@
+                            @if (statusStyle != "inq-winloss")
+                            {
                             <input type="button" value="Save" name="Save" data-command="quote.save" id="btnSave" class="btn btn-primary command">
+                            }
                             <input type="button" value="Submit" name="Submit" data-command="quote.submit" id="btnSubmit" class="btn btn-primary command">
                         </div>
 
@@ -214,46 +220,19 @@
 
         <!--------------------------------------------- New panel --------------------------------------------->
         <div class="panel panel-primary">
-            <div class="panel-heading">
-                <div class="row">
-                    <div class="col-md-4">
-                        <h3 class="panel-title">Comments and Attachments</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-6 col-md-6 form-group">
-                        <div class="subheading">
-                            Public Comments
-                            <hr>
-                        </div>
-                        <div class="control-label">
-                            Add New Comments
-                        </div>
-                        <textarea rows="4" cols="45" id="publicComment"></textarea>
-                    </div>
-                    <div class="col-sm-6 col-md-6 form-group">
-                        <div class="subheading">
-                            Public Attachments
-                            <hr>
-                        </div>
-                        <div><input type="file" id="publicAttachment" name="publicAttachment" /></div>
-                    </div>
-                </div>
-            </div>
+            @Html.Partial("~/Views/Shared/_CommentsAndAttachments.cshtml", Model)
         </div>
     </div>
 </form>
 <script type="text/javascript">
     var hiddenColumns = {};
     hiddenColumns["PM"] = "";
-    var skuDataSource = [{ "ProductNumber": "SDMSM2-002G-A11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-AMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G-AMNO, Card only, Retail, Mob", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-BM", "ProductLine": "MS-Micro", "Description": "SDMSM2-2048, Card only w/JC, Retail, Bul", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-BMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only w/JC, Retail, Bul", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-C11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-E11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-E12M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-EMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G-EMNO, Card only, Retail, MNO", "MemoryCapacity": "2GB", "ListPrice": 0 }];
+    //var skuDataSource = [{ "ProductNumber": "SDMSM2-002G-A11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-AMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G-AMNO, Card only, Retail, Mob", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-BM", "ProductLine": "MS-Micro", "Description": "SDMSM2-2048, Card only w/JC, Retail, Bul", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-BMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only w/JC, Retail, Bul", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-C11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-E11M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-E12M", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G, Card only, Retail, Mobile,", "MemoryCapacity": "2GB", "ListPrice": 0 }, { "ProductNumber": "SDMSM2-002G-EMNO", "ProductLine": "MS-Micro", "Description": "SDMSM2-002G-EMNO, Card only, Retail, MNO", "MemoryCapacity": "2GB", "ListPrice": 0 }];
     var getGridColumns = function () {
         return [
             {
                 title: "",
-                template: '<input type="checkbox" class="rsm" name="Selected" data-productNumber="#=productNumber#" data-id="#=quoteItemID#"></input>',
+                template: '<input type="checkbox" class="rsm" name="Selected" data-productNumber="#=productNumber#" data-id="#=quoteItemID#" onClick=setGridDataSource(this);></input>',
                 width: 30
             },
             {
@@ -429,7 +408,7 @@
             change: function (e) { },
             format: "MMM dd, yyyy",
         }).data("kendoDatePicker");
-
+        
         dtpkNeedPriceApprovedBy.enable(!app.isReadonly);
         dtpkPromolToDatetime.enable(!app.isReadonly);
         dtpkPromoFromDatetime.enable(!app.isReadonly);
@@ -450,10 +429,9 @@
                 var dataItem = grid.dataItem(row);
                 grid.dataItem(row).dirty = true;
                 grid.dataItem(row)[field] = $(this).val();
-                console.log('dataItem', dataItem);
             });
         });
-        var gridToolbar = app.QuoteStatusResultID == 12 ? ["create", "destroy"] : null;
+        var gridToolbar = app.QuoteStatusResultID == 12 ? [{ template: kendo.template($("#template").html()) }] : null;
         var columns = getGridColumns();
         switch (app.QuoteStatusResultID) {
             case 14:
@@ -635,6 +613,9 @@
                             estimatedDiscount: {
                                 type: "number",
                                 editable: true
+                            },
+                            isChecked: {
+                                editable: false
                             }
                         }
                     }
@@ -647,6 +628,7 @@
             editable: true,
             toolbar: gridToolbar,
             edit: onEdit1,
+            removeSelectedRow: function () { alert(); },
             dataBound: function (e) {
 
             },
@@ -686,45 +668,19 @@
             dataTextField: "customerNumber",
             select: onEndstomerSelect,
         });
-        if (app.QuoteStatusResultID == 14) {
-            $("#kddlAccountManager").kendoDropDownList({
-                autoBind: false,
-                text: '@ViewBag.AccountManagerName'
-            });
-
-        }
-        else {
-            $("#kddlAccountManager").kendoDropDownList({
-                dataTextField: "userName",
-                dataValueField: "userID",
-            });
-        }
-        $("#publicAttachment").kendoUpload({
-            async: {
-                saveUrl: "",
-                removeUrl: "remove",
-                autoUpload: true
-            },
-            complete: onPublicCompleteSucess,
-            multiple: true,
-            localization: {
-                select: "Select files"
-            },
-            template: kendo.template($('#publicTemplate').html()),
-            upload: function (e) {
-
-            },
-            remove: onFileRemove
+        $("#kddlAccountManager").kendoDropDownList({
+            dataTextField: "userName",
+            dataValueField: "userID"
         });
-
+        if (app.QuoteStatusResultID == 14) {
+            var kddlAccountManager = $("#kddlAccountManager").data("kendoDropDownList");
+            kddlAccountManager.text('@ViewBag.AccountManagerName');
+            kddlAccountManager.enable(false);
+        }
+        if (app.quoteNumber == "") {
+            $("#publicAttachment").data("kendoUpload").disable();
+        }
     });
-    function onPublicCompleteSucess(e) {
-        console.log("log: file sucessfully uploaded");
-    }
-
-    function onFileRemove(e) {
-        console.log("log: file remove");
-    }
     function onEdit1(e) {
         //var c = e.container.find('input[name=requestedPOS]');
         //var c = e.container.find('input[name=requestedPOS]');
@@ -734,8 +690,8 @@
     }
     $('#Grid').on('keyup', '.k-input:not(#ProductNumber)', onEdit);
     function onEdit(e) {
-        console.log('onEdit - e', e);
-        console.log('onEdit - $(this)', $(this));
+        //console.log('onEdit - e', e);
+        //console.log('onEdit - $(this)', $(this));
         //console.log('keyup', e, $(this), $(this)[0].dataset.bind, $(this)[0].dataset.bind.replace('value:', ''), e);
         var field = $.trim($(this)[0].dataset.bind.replace('value:', ''));
 
@@ -743,7 +699,7 @@
 
         var grid = $("#Grid").data('kendoGrid');
         var dataItem = grid.dataItem(row);
-        console.log('keyup - dataItem', dataItem);
+        //console.log('keyup - dataItem', dataItem);
 
         var listPrice = grid.dataItem(row)['listPrice'];
         listPrice = listPrice == '' ? 0 : parseFloat(listPrice, 10);
@@ -771,12 +727,12 @@
                 break;
         }
 
-        console.log('updates----------');
-        console.log('requestedQuantity', requestedQuantity);
-        console.log('requestedNetPrice', requestedNetPrice);
-        console.log('requestedPOS', requestedPOS);
-        console.log('estimatedRevenue', estimatedRevenue);
-        console.log('estimatedDiscount', estimatedDiscount);
+        //console.log('updates----------');
+        //console.log('requestedQuantity', requestedQuantity);
+        //console.log('requestedNetPrice', requestedNetPrice);
+        //console.log('requestedPOS', requestedPOS);
+        //console.log('estimatedRevenue', estimatedRevenue);
+        //console.log('estimatedDiscount', estimatedDiscount);
         grid.dataItem(row).dirty = true;
         grid.dataItem(row).set('requestedQuantity', requestedQuantity);
         grid.dataItem(row).set('requestedNetPrice', requestedNetPrice);
@@ -792,23 +748,23 @@
             .kendoNumericTextBox({
                 spinners: false,
                 change: function (e) {
-                    console.log('kendoNumericTextBox', e); //value is the selected date in the numerictextbox
+                    //console.log('kendoNumericTextBox', e); //value is the selected date in the numerictextbox
                     var value = this.value();
-                    console.log(value); //value is the selected date in the numerictextbox
+                    //console.log(value); //value is the selected date in the numerictextbox
                 }
             });
     }
 
     function editSku(container, options) {
-        console.log('container, options', container, options);
+        //console.log('container, options', container, options);
         var url = "/api/Quotes/products/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
         $('<input id="ProductNumber" name="ProductNumber" data-bind="value:' + options.field + '"/>')
             .appendTo(container)
             .kendoAutoComplete({
                 minLength: 3,
                 filter: "contains",
-                dataTextField: "ProductNumber",
-                dataSource: skuDataSource,
+                dataTextField: "productNumber",
+                //dataSource: skuDataSource,
                 headerTemplate: '<div class="dropdown-header k-widget k-header">' +
                 '<div class="row">' +
                 '<div class="col-md-11">SKU</div>' +
@@ -816,7 +772,7 @@
                 '</div>',
                 footerTemplate: 'Total #: instance.dataSource.total() # items found',
                 template: '<div class="row">' +
-                '<div class="col-md-11 cost-item" data-price="#=data.prc_Lst_Su#">#: data.material #</div>' +
+                '<div class="col-md-11 cost-item" data-price="#=data.listPrice#">#: data.productNumber #</div>' +
                 '</div>',
                 dataSource: {
                     transport: {
@@ -949,8 +905,10 @@
     }
     function saveModel(mode) {
         var model = $('#frm').serializeArray().reduce(function (m, o) { m[o.name] = m[o.name] ? m[o.name] + ',' + o.value : o.value; return m; }, {});
-        model.QuoteStatusResultID = mode == 0 ? 12 : 1;
-        model.QuoteStatusLevelID = mode == 0 ? 2 : 6;
+        //model.QuoteStatusResultID = mode == 0 ? 12 : 1;
+        //model.QuoteStatusLevelID = mode == 0 ? 2 : 6;
+        model.QuoteStatusResultID = mode == 0 ? 12 : 13;
+        model.QuoteStatusLevelID = mode == 0 ? 2 : 2;
         model.QuoteItem = [];
         var ds = $("#Grid").data('kendoGrid').dataSource;
         $.each(ds.data(), function (i, val) {
@@ -958,14 +916,14 @@
             model.QuoteItem.push(val);
             //}
         });
-        var api = "/api/quotes/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        var api = "/api/quotes/" + app.userId + "/" + app.userName + "/" + app.role + "/" + app.quoteNumber;
         $.ajax({
             url: api,
             type: 'POST',
             contentType: "application/json",
             data: JSON.stringify(model),
             success: function (result) {
-                console.log(result);
+                //console.log(result);
                 if (mode == 0) {
                     if (app.quoteNumber != "") {
                         window.location.href = "/Quotes/Create/" + app.userId + '/' + app.role + '/' + app.quoteNumber;
@@ -999,7 +957,7 @@
                 postData.push(val);
             }
         });
-        var api = "/api/quoteitems/accept/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        var api = "/api/quoteitems/accept/" + app.userId + "/" + app.userName + "/" + app.role + "/" + app.quoteNumber + "/" + $("#publicComment")[0].value;
         $.ajax({
             url: api,
             type: 'POST',
@@ -1013,6 +971,24 @@
         });
         return false;
     }
+    function deleteQuote() {
+        var api = "/api/quoteitems/delete/" + app.quoteNumber;
+        $.ajax({
+            url: api,
+            type: 'POST',
+            contentType: "application/json",
+            success: function (result) {
+                alert("Quote deleted successfully");
+                window.location.href = "/Home/Index/" + app.userId + '/' + app.role;
+            },
+            error: function (xhr) {
+                alert("Error while deleting the quote");
+            }
+        });
+    }
+    function setGridDataSource(obj) {
+        $("#Grid").data("kendoGrid").dataItem($(obj).closest("tr")).isChecked = $(obj).is(":checked");
+    }
     $(document).on('quote.copy', function (e) {
         alert('copied');
     });
@@ -1025,6 +1001,9 @@
             saveModel(1);
         }
     });
+    $(document).on('quote.delete', function (e) {
+        deleteQuote();
+    });
     $(document).on('quote.save', function (e) {
         if (!validateQuote()) return false;
         saveModel(0);
@@ -1032,24 +1011,51 @@
     $(document).on('quote.accept', function (e) {
         acceptQuote();
     });
-    $(document).on('quote.delete', function (e) {
-        alert('deleted');
-    });
-
     $(document).on('click', '.command', function (e) {
         e.preventDefault();
         $(document).trigger($(this).data().command);
     });
+    $(document).on('click', '#btnDelete', function (e) {
+        var gview, dsGview, isChecked, tr, rowsToDelete = [];
+        dsGview = $("#Grid").data("kendoGrid").dataSource.data();
+        for (var i = 0; i < dsGview.length; i++) {
+            if (dsGview[i].isChecked) {
+                    var api = "/api/quoteitems/deleteQuoteItem/" + dsGview[i].quoteItemID;
+                    $.ajax({
+                        url: api,
+                        type: 'POST',
+                        contentType: "application/json",
+                        success: function (result) {
+                            gview = $("#Grid").data("kendoGrid");
+                            $(":checkbox[name='Selected']", gview.tbody).each(function (ind, elm) {
+                                isChecked = $(this).is(":checked");
+                                if (isChecked) {
+                                    tr = $(this).closest("tr");
+                                    rowsToDelete.push(tr);
+                                }
+                            });
+                            var oldConfirm;
+                            $.each(rowsToDelete, function (ind, elm) {
+                                oldConfirm = window.confirm;
+                                window.confirm = function () { return true; };
+                                gview.removeRow(elm);
+                                window.confirm = oldConfirm;
+                            });
+                            gview.refresh();
+                        },
+                        error: function (xhr) {
+                            console.log("error is : ", xhr);
+                        }
+                    });
+            }
+        }
+    });
 </script>
-<script id="publicTemplate" type="text/x-kendo-temple">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="col-lg-6">
-                <a href="">#=name#</a>
-            </div>
-            <div class="col-lg-4">
-                <button type='button' class='k-upload-action'></button>
-            </div>
-        </div>
-    </div>
+<script id="template" type="text/x-kendo-template">
+    <a role="button" class="k-button k-button-icontext k-grid-add">
+        <span class="k-icon k-i-plus"></span>Add new record
+    </a>
+    <a role="button" class="k-button k-button-icontext k-grid-delete" id="btnDelete">
+        <span class="k-icon k-i-close"></span>Delete
+    </a>
 </script>

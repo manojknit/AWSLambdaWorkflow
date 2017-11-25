@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using iPromo.Entities;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography.Xml;
 
 namespace iPromo.Web.Api
 {
@@ -126,6 +129,9 @@ namespace iPromo.Web.Api
                     quote.PMActualApprovedByUserID = (int)id.Value;
                     quote.PMApprovedByUserID = (int)id.Value;
                     quote.PMApprovedDateTime = DateTime.Now;
+                    //API CALL ToDo
+                    string pmApproval = "https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/approve?taskToken="+ Uri.EscapeDataString(quote.Token) + "&quoteid=" + quote.QuoteID ;
+                    string output = DoAPICallToApprove(pmApproval);
                     break;
                 case "POE":
                     quote.PEActualApprovedByUserId = (int)id.Value;
@@ -162,6 +168,41 @@ namespace iPromo.Web.Api
                 }
             }
             return Ok(new { success = true });// CreatedAtAction("GetQuoteItem", new { id = quoteItem.QuoteItemID }, quoteItem);
+        }
+
+        private string DoAPICallToApprove(string URL)
+        {
+            try
+            {
+                string output = string.Empty;
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri(URL);
+
+                // Add an Accept header for JSON format.
+                client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+                // List data response.
+                HttpResponseMessage response = client.GetAsync("").Result;  // Blocking call!
+                if (response.IsSuccessStatusCode)
+                {
+                    // Parse the response body. Blocking!
+                    var dataObjects = response.Content.ReadAsStringAsync().Result;
+                    foreach (var d in dataObjects)
+                    {
+                        output = d.ToString();
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("{0} ({1})", (int)response.StatusCode, response.ReasonPhrase);
+                }
+                return output;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [HttpPost]

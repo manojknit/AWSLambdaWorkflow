@@ -1,0 +1,78 @@
+﻿@model iPromo.Entities.Quote
+
+<div class="panel-heading">
+    <div class="row">
+        <div class="col-md-4">
+            <h3 class="panel-title">Comments and Attachments</h3>
+        </div>
+    </div>
+</div>
+<div class="panel-body">
+    <div class="row">
+        <div class="col-sm-6 col-md-6 form-group">
+            <div class="subheading">
+                Public Comments
+                <hr>
+            </div>
+            <div>@Html.Raw(Model.PublicComments)</div>
+            <div class="control-label" id="divAddComments">
+                Add New Comments
+            </div>
+            <textarea rows="4" cols="45" id="publicComment" name="PublicComments"></textarea>
+        </div>
+        <div class="col-sm-6 col-md-6 form-group" id="divPublicAttachmentParent">
+            <div class="subheading">
+                Public Attachments
+                <hr>
+            </div>
+            <div>
+                <input type="file" id="publicAttachment" name="publicAttachment" />
+            </div>
+            @if (ViewBag.Files != null && ViewBag.Files.Count > 0)
+            {
+                var files = ViewBag.Files;
+                <div>
+                    @foreach(var file in files)
+                    {
+                        <a href= "@file.Value" target="_blank" download> @file.Key</a> <br/>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#publicAttachment").kendoUpload({
+                async: {
+                    saveUrl: "/api/FileUpload",
+                    autoUpload: true
+                },
+                complete: onPublicCompleteSucess,
+                multiple: true,
+                localization: {
+                    select: "Select files"
+                },
+                template: kendo.template($('#publicTemplate').html()),
+                upload: function (e) {
+                    e.sender.options.async.saveUrl = "/api/FileUpload" + "?quoteNumber=" + "@Model.QuoteNumber";
+                },
+            });
+            function onPublicCompleteSucess(e) {
+                window.location.reload();
+            }
+        });
+
+    </script>
+    <script id="publicTemplate" type="text/x-kendo-temple">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-lg-6">
+                    <a href="">#=name#</a>
+                </div>
+                <div class="col-lg-4">
+                    <button type='button' class='k-upload-action'></button>
+                </div>
+            </div>
+        </div>
+    </script>
+</div>

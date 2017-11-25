@@ -22,6 +22,7 @@ namespace AWSLambdaWorkflow
     public class Function
     {
         protected CredentialProfileStoreChain _CredentialProfileStoreChain = null;
+
         //const aws = require('aws-sdk');
         /// <summary>
         /// A simple function that takes a string and does a ToUpper
@@ -42,8 +43,8 @@ namespace AWSLambdaWorkflow
             //{ }
             LambdaLogger.Log("1. Lambda start");
             //Starts workflow instance with parameter
-            var stste =  StartWorkflowInstanceAsync();
-            LambdaLogger.Log("2. Workflow started."+ stste??"".ToString());
+            var stste = StartWorkflowInstanceAsync();
+            LambdaLogger.Log("2. Workflow started." + stste ?? "".ToString());
             string emailstatus = "Problem occured in email approval.";
             string token = string.Empty;
             try
@@ -58,7 +59,7 @@ namespace AWSLambdaWorkflow
                 var aws_secret_access_key = Environment.GetEnvironmentVariable("aws_secret_access_key");
                 using (AmazonStepFunctionsClient stepfunctions = new AmazonStepFunctionsClient(aws_access_key_id, aws_secret_access_key, Amazon.RegionEndpoint.USEast1))
                 {
-                    GetActivityTaskRequest request = new GetActivityTaskRequest {ActivityArn = "arn:aws:states:us-east-1:494875521123:activity:PMApprovalStep", WorkerName = "PMApprovingTaskActivity" };
+                    GetActivityTaskRequest request = new GetActivityTaskRequest { ActivityArn = "arn:aws:states:us-east-1:494875521123:activity:PMApprovalStep", WorkerName = "PMApprovingTaskActivity" };
                     LambdaLogger.Log("Response Output req sent ");
                     responsetask = stepfunctions.GetActivityTaskAsync(request);
                     responsetask.GetAwaiter();
@@ -69,16 +70,17 @@ namespace AWSLambdaWorkflow
                     else
                         LambdaLogger.Log("Response Output = null");
                     token = response.TaskToken;
-                    LambdaLogger.Log("Token = "+token);
+                    LambdaLogger.Log("Token = " + token);
                 }
                 if (!string.IsNullOrEmpty(response.Input))
                 {
-                    //TODO get email from db
+                    List<string> tolst = GetUsersAsPerRole("PM");   //TODO get email from db
+
                     var input = JObject.Parse(response.Input);
-                    var email = "manojsjsu@gmail.com"; //get to mail from salesOrg as per approval level
+                    //var email = "manojsjsu@gmail.com"; //get to mail from salesOrg as per approval level
                     var quoteid = (int)input.SelectToken("quoteid");
-                    var tolst = new List<string>();
-                    tolst.Add(email);
+                    //var tolst = new List<string>();
+                    //tolst.Add(email);
                     Body body = new Body
                     {
                         Html = new Content
@@ -86,7 +88,7 @@ namespace AWSLambdaWorkflow
                             Charset = "UTF-8",
                             Data = "<div>Hi!<br /><br /> " +
                                         "Promotion '" + (string)input.SelectToken("promodesc") + "' needs your approval!<br />" +
-                                        "Can you please approve:<br /> <h3><a href='https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/approve?taskToken="+ Uri.EscapeDataString(token) + "&quoteid=" + quoteid + "'>Click To Approve</a></h3><br />" + 
+                                        "Can you please approve:<br /> <h3><a href='https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/approve?taskToken=" + Uri.EscapeDataString(token) + "&quoteid=" + quoteid + "'>Click To Approve</a></h3><br />" +
                                         //"https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/approve?taskToken=" + Uri.EscapeDataString(token) + "&quoteid=" + quoteid + "<br />" +
                                         "Or reject:<br />" +
                                         "<h3><a href='https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/reject?taskToken=" + Uri.EscapeDataString(token) + "&quoteid=" + quoteid + "'>Click To Reject</a></h3></div><br /><br />Thank You,<br />Application Team"
@@ -109,12 +111,14 @@ namespace AWSLambdaWorkflow
                         ConfigurationSetName = "sesconfigset",
                         SourceArn = "arn:aws:ses:us-east-1:494875521123:identity/erpatel@gmail.com"
                     };
-                    var status =  ses.SendEmailAsync(s);
+                    var status = ses.SendEmailAsync(s);
                     status.GetAwaiter();
-                    
+
                     emailstatus = status.Result.HttpStatusCode.ToString();
+
+
                     LambdaLogger.Log("Going to update Db");
-                    if(!string.IsNullOrEmpty(token))
+                    if (!string.IsNullOrEmpty(token))
                         UpdateApprovalStatusWithToken(quoteid, Uri.EscapeDataString(token));   //Moving quote status to 3(PM) and updating token
                     //string input,
                     //var bucketName = System.Environment.GetEnvironmentVariable("mysqlconnection");
@@ -134,9 +138,9 @@ namespace AWSLambdaWorkflow
             try
             {
                 LambdaLogger.Log("1. Lambda start1");
-                List<Quote> quotes = GetQuotesAsPerStage(2);//1 for Submitted
+                List<Quote> quotes = GetQuotesAsPerStage(13, 2);//13 Submitted, 2 RSM
                 LambdaLogger.Log("1. Lambda start2");
-                
+
                 foreach (var item in quotes)
                 {
                     //Check if any Promotion is submitted
@@ -156,36 +160,66 @@ namespace AWSLambdaWorkflow
                     using (AmazonStepFunctionsClient stepfunctions = new AmazonStepFunctionsClient(aws_access_key_id, aws_secret_access_key, Amazon.RegionEndpoint.USEast1))
                     {
                         LambdaLogger.Log("Gocha credentials going to invoke Step function");
-                        string nameunique = "WF" + DateTime.Now.ToString("ddMMyyyyHHmmssfff");
+                        string nameunique = item+"_WF" + DateTime.Now.ToString("ddMMyyyyHHmmssfff");
                         StartExecutionRequest newRequest = new StartExecutionRequest { StateMachineArn = "arn:aws:states:us-east-1:494875521123:stateMachine:ApprovalWorkflow", Input = inputToStepFunc, Name = nameunique };
                         LambdaLogger.Log("Step Func object is ready to be invoked.");
                         status = await stepfunctions.StartExecutionAsync(newRequest);
-                        LambdaLogger.Log("Step Func invoke done"+status.ToString());
+                        LambdaLogger.Log("Step Func invoke done" + status.ToString());
                     }
                     //}
                     //else
                     //    LambdaLogger.Log("Null AWS Credentilas found.");
                     //}
-                    LambdaLogger.Log("Workflow is created for Quote id = " + item.QuoteID );
+                    LambdaLogger.Log("Workflow is created for Quote id = " + item.QuoteID);
                 }
-                
+
             }
             catch (Exception ex)
             {
-                LambdaLogger.Log("Error"+ex.ToString());
+                LambdaLogger.Log("Error" + ex.ToString());
                 throw ex;
             }
             return status;
         }
 
-        private List<Quote> GetQuotesAsPerStage(int promoStage)
+        private MySqlConnection GetConnection()
+        {
+            string connectionstring = System.Environment.GetEnvironmentVariable("mysqlconnection");
+            //LambdaLogger.Log("Con string = " + connectionstring);
+            return new MySqlConnection(connectionstring);
+        }
+
+        private List<string> GetUsersAsPerRole(string role)
+        {
+            List<string> lstEmails = new List<string>();
+            using (MySqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                MySqlCommand cmd = new MySqlCommand(string.Format("select Email from SalesOrg where Title ='{0}'", role), conn);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    string email = string.Empty;
+                    while (reader.Read())
+                    {
+                        email = reader["Email"].ToString();
+                        lstEmails.Add(email);
+                    }
+                }
+            }
+            return lstEmails;
+        }
+
+
+
+        private List<Quote> GetQuotesAsPerStage(int QuoteStatusLevelID, int QuoteStatusResultID)
         {
             Quote quote = null;
             List<Quote> lstquote = new List<Quote>();
             using (MySqlConnection conn = GetConnection())
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand(string.Format("select * from Quote where QuoteStatusResultID ={0}", promoStage), conn);
+                MySqlCommand cmd = new MySqlCommand(string.Format("select * from Quote where QuoteStatusLevelID ={0} and QuoteStatusResultID ={1}", QuoteStatusLevelID, QuoteStatusResultID), conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -196,6 +230,7 @@ namespace AWSLambdaWorkflow
                             QuoteID = Convert.ToInt32(reader["QuoteID"]),
                             QuoteNumber = reader["QuoteNumber"].ToString(),
                             QuoteTypeID = Convert.ToInt32(reader["QuoteTypeID"]),
+                            QuoteStatusLevelID = Convert.ToInt32(reader["QuoteStatusLevelID"]),
                             QuoteStatusResultID = Convert.ToInt32(reader["QuoteStatusResultID"]),
                             TPBackground = reader["TPBackground"].ToString()
                         };
@@ -216,12 +251,12 @@ namespace AWSLambdaWorkflow
 
                         conn.Open();
                         //This is my update query in which i am taking input from the user through windows forms and update the record.  
-                        string Query = "update Quote set Token='" + token + "',QuoteStatusResultID=" + 3 + " where quoteid = " + quoteid + ";";
+                        string Query = "update Quote set Token='" + token + "',QuoteStatusLevelID=" + 6 + " QuoteStatusResultID=" + 1 + " where quoteid = " + quoteid + ";";
                         LambdaLogger.Log("Query= " + Query);
                         //This is  MySqlConnection here i have created the object and pass my connection string.  
                         MySqlCommand MyCommand2 = new MySqlCommand(Query, conn);
                         MySqlDataReader MyReader2;
-                        
+
                         MyReader2 = MyCommand2.ExecuteReader();
                         LambdaLogger.Log("Token Updated");
                         while (MyReader2.Read())
@@ -239,11 +274,7 @@ namespace AWSLambdaWorkflow
             }
             return "Success token update";
         }
-        private MySqlConnection GetConnection()
-        {
-            string connectionstring = System.Environment.GetEnvironmentVariable("mysqlconnection");
-            return new MySqlConnection(connectionstring);
-        }
+
         public Quote GetQuote(int quoteid)
         {
             Quote quote = null;

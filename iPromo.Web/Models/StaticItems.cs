@@ -71,8 +71,10 @@ namespace iPromo.Web
                 case 2:
                     if (currentResult == 12)
                     {
-                        level = 6;
-                        result = 1;
+                        //level = 6;
+                        //result = 1;
+                        level = 2; //Will update from workflow
+                        result = 12;
                     }
                     else if (currentResult == 14)
                     {
@@ -80,7 +82,9 @@ namespace iPromo.Web
                     }
                     break;
                 case 6:
-                    level = 19;
+                    //level = 19;
+                    //result = 1;
+                    level = 6;//API will Approve
                     result = 1;
                     break;
                 case 19:

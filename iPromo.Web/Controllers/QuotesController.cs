@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using iPromo.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace iPromo.Web.Controllers
 {
@@ -33,6 +34,7 @@ namespace iPromo.Web.Controllers
         public async Task<IActionResult> Details(long? id, string role, string quoteNumber)
         {
             ViewBag.QuoteNumber = quoteNumber;
+            ViewBag.UserName = HttpContext.Session.GetString("UserName");
             if (id == null || string.IsNullOrWhiteSpace(role) || string.IsNullOrWhiteSpace(quoteNumber))
             {
                 return NotFound();
@@ -44,10 +46,46 @@ namespace iPromo.Web.Controllers
             {
                 return NotFound();
             }
+            string soldToName = string.Empty;
+            mtCustomer mcSoldToName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == quote.PlanningAccountNumber);
+            if (mcSoldToName != null)
+                soldToName = mcSoldToName.Customer_Desc;
+            ViewBag.SoldToName = soldToName;
 
-            
+            string tier2CustomerName = string.Empty;
+            mtCustomer mcTier2CustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == quote.EndCustomerID);
+            if (mcTier2CustomerName != null)
+                tier2CustomerName = mcTier2CustomerName.Customer_Desc;
+            ViewBag.Tier2CustomerName = tier2CustomerName;
 
-            return View("Approval",quote);
+            string endCustomerName = string.Empty;
+            mtCustomer mcEndCustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == quote.EndUser);
+            if (mcEndCustomerName != null)
+                endCustomerName = mcEndCustomerName.Customer_Desc;
+            ViewBag.EndCustomerName = endCustomerName;
+
+            ViewBag.Currency = string.IsNullOrEmpty(quote.Currency) ? null : quote.Currency;
+
+            string accountManagerName = string.Empty;
+            SalesOrg soAccountManagerName = _context.SalesOrg.FirstOrDefault(f => f.UserID == quote.AccountManagerID);
+            if (soAccountManagerName != null)
+                accountManagerName = soAccountManagerName.UserName;
+            ViewBag.AccountManagerName = accountManagerName;
+            ViewBag.QuoteNumber = quote.QuoteNumber;
+
+            //var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
+            //if (Directory.Exists(uploadPath) == true)
+            //{
+            //    var files = Directory.GetFiles(uploadPath);
+            //    var fileList = new Dictionary<string, string>();
+            //    for (int i = 0; i < files.Length; i++)
+            //    {
+            //        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
+            //    }
+            //    ViewBag.Files = fileList;
+            //}
+
+            return View("Approval", quote);
         }
         [HttpGet]
         [Route("ReadOnly/{id?}/{role?}/{quoteNumber?}")]
@@ -65,8 +103,45 @@ namespace iPromo.Web.Controllers
             {
                 return NotFound();
             }
+            string soldToName = string.Empty;
+            mtCustomer mcSoldToName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == quote.PlanningAccountNumber);
+            if (mcSoldToName != null)
+                soldToName = mcSoldToName.Customer_Desc;
+            ViewBag.SoldToName = soldToName;
 
+            string tier2CustomerName = string.Empty;
+            mtCustomer mcTier2CustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == quote.EndCustomerID);
+            if (mcTier2CustomerName != null)
+                tier2CustomerName = mcTier2CustomerName.Customer_Desc;
+            ViewBag.Tier2CustomerName = tier2CustomerName;
 
+            string endCustomerName = string.Empty;
+            mtCustomer mcEndCustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == quote.EndUser);
+            if (mcEndCustomerName != null)
+                endCustomerName = mcEndCustomerName.Customer_Desc;
+            ViewBag.EndCustomerName = endCustomerName;
+
+            ViewBag.Currency = string.IsNullOrEmpty(quote.Currency) ? null : quote.Currency;
+
+            string accountManagerName = string.Empty;
+            SalesOrg soAccountManagerName = _context.SalesOrg.FirstOrDefault(f => f.UserID == quote.AccountManagerID);
+            if (soAccountManagerName != null)
+                accountManagerName = soAccountManagerName.UserName;
+            ViewBag.AccountManagerName = accountManagerName;
+
+            ViewBag.QuoteNumber = quote.QuoteNumber;
+
+            //var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
+            //if (Directory.Exists(uploadPath) == true)
+            //{
+            //    var files = Directory.GetFiles(uploadPath);
+            //    var fileList = new Dictionary<string, string>();
+            //    for (int i = 0; i < files.Length; i++)
+            //    {
+            //        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
+            //    }
+            //    ViewBag.Files = fileList;
+            //}
 
             return View("ReadOnly", quote);
         }
@@ -91,12 +166,44 @@ namespace iPromo.Web.Controllers
             else
             {
                 model = _context.Quote.FirstOrDefault(f => f.QuoteNumber == quoteNumber);
-                ViewBag.SoldToName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == model.PlanningAccountNumber).Customer_Desc;
-                ViewBag.Tier2CustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == model.EndCustomerID).Customer_Desc;
-                ViewBag.EndCustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == model.EndUser).Customer_Desc;
+                string soldToName = string.Empty;
+                mtCustomer mcSoldToName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == model.PlanningAccountNumber);
+                if (mcSoldToName != null)
+                    soldToName = mcSoldToName.Customer_Desc;
+                ViewBag.SoldToName = soldToName;
+
+                string tier2CustomerName = string.Empty;
+                mtCustomer mcTier2CustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == model.EndCustomerID);
+                if (mcTier2CustomerName != null)
+                    tier2CustomerName = mcTier2CustomerName.Customer_Desc;
+                ViewBag.Tier2CustomerName = tier2CustomerName;
+
+                string endCustomerName = string.Empty;
+                mtCustomer mcEndCustomerName = _context.mtCustomer.FirstOrDefault(f => f.CustomerNumber == model.EndUser);
+                if (mcEndCustomerName != null)
+                    endCustomerName = mcEndCustomerName.Customer_Desc;
+                ViewBag.EndCustomerName = endCustomerName;
+
                 ViewBag.Currency = string.IsNullOrEmpty(model.Currency) ? null : model.Currency;
-                ViewBag.AccountManagerName = _context.SalesOrg.FirstOrDefault(f => f.UserID == model.AccountManagerID).UserName;
+
+                string accountManagerName = string.Empty;
+                SalesOrg soAccountManagerName = _context.SalesOrg.FirstOrDefault(f => f.UserID == model.AccountManagerID);
+                if (soAccountManagerName != null)
+                    accountManagerName = soAccountManagerName.UserName;
+                ViewBag.AccountManagerName = accountManagerName;
+
                 ViewBag.QuoteNumber = model.QuoteNumber;
+                //var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
+                //if (Directory.Exists(uploadPath) == true)
+                //{
+                //    var files = Directory.GetFiles(uploadPath);
+                //    var fileList = new Dictionary<string, string>();
+                //    for (int i = 0; i < files.Length; i++)
+                //    {
+                //        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
+                //    }
+                //    ViewBag.Files = fileList;
+                //}
             }
             return View(model);
         }
@@ -201,7 +308,5 @@ namespace iPromo.Web.Controllers
         {
             return _context.Quote.Any(e => e.QuoteID == id);
         }
-
-
     }
 }

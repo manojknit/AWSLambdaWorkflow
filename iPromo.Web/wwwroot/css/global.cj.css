@@ -1,4 +1,8 @@
-﻿body, wrapper {
+﻿/*header   #1ebea5 -- green blue
+Logo blue #00a3db
+back #F4B81F  Border #db911b  Focus (back #db911b  text-shadow: 2px 2px 4px #F9DC87);  --yellow*/
+
+body, wrapper {
     background-color: #ebebeb;
     font-family: Lato;
 }
@@ -273,9 +277,9 @@ a {
     background-color: transparent;
 }
 
-.k-animation-container {
+/*.k-animation-container {
     position: center !important;
-}
+}*/
 
 .k-alt {
     background-color: #f1f1f1;
@@ -302,13 +306,13 @@ a {
         color: black;
     }
 
-#ProductNumber-list {
+/*#ProductNumber-list {
     width: 800px !important;
     overflow: auto;
-}
+}*/
 
 .dropdown-header {
-    background-color: #ed1c24;
+    background-color: #1ebea5;
     color: white;
 }
 

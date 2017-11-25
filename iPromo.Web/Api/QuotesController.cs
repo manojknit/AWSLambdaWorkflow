@@ -22,27 +22,81 @@ namespace iPromo.Web.Api
         // GET: api/Qutoes/Products/32994/RSM/820003
         [HttpGet]
         [Route("products/{id?}/{role?}/{quoteNumber?}/{keyword?}")]
-        public IEnumerable<mtListPrice> GetProducts(long? id, string role, string quoteNumber, string keyword)
+        public IEnumerable<ProductItem> GetProducts(long? id, string role, string quoteNumber, string keyword)
         {
-
+            var result = new List<ProductItem>();
             //if (string.IsNullOrWhiteSpace(quoteNumber))
             //{
             //    var items = new List<mtListPrice>();
             //    return items;
             //}
-
-            var products = (from p in _context.mtListPrice
-                            where p.Material.Contains(keyword)
-                            group p by new { p.Material, p.Prc_Lst_Su } into g
-                            select new { g.Key.Material, g.Key.Prc_Lst_Su }).OrderByDescending(od => od.Prc_Lst_Su).Take(100).ToList();
-
-            var result = products.Select(s =>
+            using (var command = _context.Database.GetDbConnection().CreateCommand())
             {
-                var item = new mtListPrice();
-                item.Material = s.Material;
-                item.Prc_Lst_Su = s.Prc_Lst_Su;
-                return item;
-            }).ToList();
+
+                //TODO: SQL Injection warning!!!
+                //TODO: need to find out a way to work with parameters or use linq!
+                var query = @"SELECT distinct
+                                        p.ProductID as ProductNumber
+                                        ,p.ProductLine as ProductLine
+                                        ,p.Description as Description
+                                        ,p.MemoryCapacityGroup as MemoryCapacity
+                                        ,pr.Prc_Lst_Su as ListPrice
+                                        FROM mtListPrice pr
+                                        inner join mtproduct p on pr.Material = p.ProductID
+                                        where p.ProductID  like @keyword
+                                        ";
+                var val = string.Format("'%{0}%'", keyword);
+                command.CommandText = query.Replace("@keyword", val);
+                //MySql.Data.MySqlClient.MySqlParameter param = new MySql.Data.MySqlClient.MySqlParameter();
+                //param.ParameterName = "@keyword";
+                //param.Value = string.Format("%{0}%", keyword);
+                //command.Parameters.Insert(1, keyword);
+                //command.Parameters[0].ParameterName = "@keyword";
+                //command.Parameters["@keyword"].Value = keyword;
+                _context.Database.OpenConnection();
+                //var ss = command.ExecuteScalar();
+
+                using (var r = command.ExecuteReader())
+                {
+                    while (r.Read())
+                    {
+                        var ProductNumber = r.GetFieldValue<string>(0);
+                        var oProductLine = r.GetValue(1);
+                        var ProductLine = oProductLine == DBNull.Value ? string.Empty : oProductLine.ToString();
+
+                        var oDescription = r.GetValue(2);
+                        var Description = oDescription == DBNull.Value ? string.Empty : oDescription.ToString();
+
+                        var oMemoryCapacity = r.GetValue(3);
+                        var MemoryCapacity = oMemoryCapacity == DBNull.Value ? string.Empty : oMemoryCapacity.ToString();
+
+                        var oListPrice = r.GetValue(4);
+                        var ListPrice = oListPrice == DBNull.Value ? string.Empty : oListPrice.ToString();
+
+                        var item = new ProductItem();
+                        item.ProductNumber = ProductNumber;
+                        item.ProductLine = ProductLine;
+                        item.Description = Description;
+                        item.MemoryCapacity = MemoryCapacity;
+                        item.ListPrice = ListPrice;
+                        result.Add(item);
+
+                    }
+                    // do something with result
+                }
+            }
+            //var products = (from p in _context.mtListPrice
+            //                where p.Material.Contains(keyword)
+            //                group p by new { p.Material, p.Prc_Lst_Su } into g
+            //                select new { g.Key.Material, g.Key.Prc_Lst_Su }).OrderByDescending(od => od.Prc_Lst_Su).Take(100).ToList();
+
+            //var result = products.Select(s =>
+            //{
+            //    var item = new mtListPrice();
+            //    item.Material = s.Material;
+            //    item.Prc_Lst_Su = s.Prc_Lst_Su;
+            //    return item;
+            //}).ToList();
 
             return result;
         }
@@ -57,6 +111,7 @@ namespace iPromo.Web.Api
             {
                 var quotes = (from q in _context.Quote
                               where q.QuoteStatusLevelID == roleId && (q.QuoteStatusResultID == 1 || q.QuoteStatusResultID == 12 || q.QuoteStatusResultID == 14 || q.QuoteStatusResultID == 15 )  && q.SubmittedByUserID == id
+                              orderby q.LastModifiedDatetime descending
                               select q).ToList();
                 return quotes;
             }
@@ -64,6 +119,7 @@ namespace iPromo.Web.Api
             {
                 var quotes = (from q in _context.Quote
                               where q.QuoteStatusLevelID == roleId && q.QuoteStatusResultID == inq
+                              orderby q.LastModifiedDatetime descending
                               select q).ToList();
                 return quotes;
             }
@@ -145,8 +201,8 @@ namespace iPromo.Web.Api
 
         // POST: api/Quotes
         [HttpPost]
-        [Route("{id}/{role}/{quoteNumber?}")]
-        public async Task<IActionResult> PostQuote(string id, string role, string quoteNumber, [FromBody] Quote quote)
+        [Route("{id}/{userName}/{role}/{quoteNumber?}")]
+        public async Task<IActionResult> PostQuote(string id, string userName, string role, string quoteNumber, [FromBody] Quote quote)
         {
             if (!ModelState.IsValid)
             {
@@ -159,6 +215,9 @@ namespace iPromo.Web.Api
                 quote.CreatedByUserID = Convert.ToInt32(id);
                 quote.SubmittedByUserID = Convert.ToInt32(id);
                 quote.CreatedDateTime = DateTime.Now;
+                quote.LastModifiedDatetime = DateTime.Now;
+                if (!string.IsNullOrWhiteSpace(quote.PublicComments))
+                    quote.PublicComments = String.Format("({0}): {1} - {2}<br />", DateTime.Now, userName, quote.PublicComments);
                 _context.Quote.Add(quote);
             }
             else
@@ -176,6 +235,10 @@ namespace iPromo.Web.Api
                 dbQuote.QuoteStatusResultID = quote.QuoteStatusResultID;
                 dbQuote.CreatedByUserID = quote.CreatedByUserID;
                 dbQuote.SubmittedByUserID = quote.SubmittedByUserID;
+                dbQuote.LastModifiedDatetime = DateTime.Now;
+                if (!string.IsNullOrWhiteSpace(quote.PublicComments))
+                    dbQuote.PublicComments += String.Format("({0}): {1} - {2}<br />", DateTime.Now, userName, quote.PublicComments);
+
                 _context.Entry(dbQuote).State = EntityState.Modified;
                 dbQuote.QuoteItem = new List<QuoteItem>();
                 foreach (var qi in quote.QuoteItem)

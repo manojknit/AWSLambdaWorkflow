@@ -66,7 +66,7 @@ namespace iPromo.Entities
 
         public DateTime? QuoteExpirationDate { get; set; }
 
-        public byte[] RejRetReason { get; set; }
+        public string RejRetReason { get; set; }
 
         [StringLength(50)]
         public string SerialNumber { get; set; }
@@ -162,10 +162,10 @@ namespace iPromo.Entities
 
         public DateTime? PEApprovedDateTime { get; set; }
 
-        [StringLength(20)]
+  
         public string Action { get; set; }
 
-        public byte[] Token { get; set; }
+        public string Token { get; set; }
 
         public virtual ICollection<QuoteItem> QuoteItem { get; set; }
 

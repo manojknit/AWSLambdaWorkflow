@@ -16,11 +16,11 @@ namespace AWSLambdaWorkflow
       
         public string ValidTill { get; set; }
 
-        public int QuoteTypeID { get; set; }
+        public byte? QuoteTypeID { get; set; }
 
-        public int QuoteStatusLevelID { get; set; }
+        public byte? QuoteStatusLevelID { get; set; }
 
-        public int QuoteStatusResultID { get; set; }
+        public byte? QuoteStatusResultID { get; set; }
 
       
         public string PlanningAccountNumber { get; set; }

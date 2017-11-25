@@ -138,7 +138,7 @@ namespace AWSLambdaWorkflow
             try
             {
                 LambdaLogger.Log("1. Lambda start1");
-                List<Quote> quotes = GetQuotesAsPerStage(13, 2);//13 Submitted, 2 RSM
+                List<Quote> quotes = GetQuotesAsPerStage(2, 13);//2 RSM, 13 Submitted, 
                 LambdaLogger.Log("1. Lambda start2");
 
                 foreach (var item in quotes)
@@ -160,7 +160,7 @@ namespace AWSLambdaWorkflow
                     using (AmazonStepFunctionsClient stepfunctions = new AmazonStepFunctionsClient(aws_access_key_id, aws_secret_access_key, Amazon.RegionEndpoint.USEast1))
                     {
                         LambdaLogger.Log("Gocha credentials going to invoke Step function");
-                        string nameunique = item+"_WF" + DateTime.Now.ToString("ddMMyyyyHHmmssfff");
+                        string nameunique = item.QuoteID + "_WF";//+"_" + DateTime.Now.ToString("ddMMyyyyHHmmssfff");
                         StartExecutionRequest newRequest = new StartExecutionRequest { StateMachineArn = "arn:aws:states:us-east-1:494875521123:stateMachine:ApprovalWorkflow", Input = inputToStepFunc, Name = nameunique };
                         LambdaLogger.Log("Step Func object is ready to be invoked.");
                         status = await stepfunctions.StartExecutionAsync(newRequest);
@@ -212,7 +212,7 @@ namespace AWSLambdaWorkflow
 
 
 
-        private List<Quote> GetQuotesAsPerStage(int QuoteStatusLevelID, int QuoteStatusResultID)
+        private List<Quote> GetQuotesAsPerStage(byte QuoteStatusLevelID, byte QuoteStatusResultID)
         {
             Quote quote = null;
             List<Quote> lstquote = new List<Quote>();
@@ -229,9 +229,9 @@ namespace AWSLambdaWorkflow
                         {
                             QuoteID = Convert.ToInt32(reader["QuoteID"]),
                             QuoteNumber = reader["QuoteNumber"].ToString(),
-                            QuoteTypeID = Convert.ToInt32(reader["QuoteTypeID"]),
-                            QuoteStatusLevelID = Convert.ToInt32(reader["QuoteStatusLevelID"]),
-                            QuoteStatusResultID = Convert.ToInt32(reader["QuoteStatusResultID"]),
+                            QuoteTypeID = reader["QuoteTypeID"] != System.DBNull.Value ? (byte?)reader["QuoteTypeID"] : null,
+                            QuoteStatusLevelID = reader["QuoteStatusLevelID"] != System.DBNull.Value ? (byte?)reader["QuoteStatusLevelID"] : null,
+                            QuoteStatusResultID = reader["QuoteStatusResultID"] != System.DBNull.Value ? (byte?)reader["QuoteStatusResultID"] : null,
                             TPBackground = reader["TPBackground"].ToString()
                         };
                         lstquote.Add(quote);
@@ -251,7 +251,7 @@ namespace AWSLambdaWorkflow
 
                         conn.Open();
                         //This is my update query in which i am taking input from the user through windows forms and update the record.  
-                        string Query = "update Quote set Token='" + token + "',QuoteStatusLevelID=" + 6 + " QuoteStatusResultID=" + 1 + " where quoteid = " + quoteid + ";";
+                        string Query = "update Quote set Token='" + token + "', QuoteStatusLevelID=" + 6 + ", QuoteStatusResultID=" + 1 + " where quoteid = " + quoteid + ";";
                         LambdaLogger.Log("Query= " + Query);
                         //This is  MySqlConnection here i have created the object and pass my connection string.  
                         MySqlCommand MyCommand2 = new MySqlCommand(Query, conn);
@@ -292,8 +292,9 @@ namespace AWSLambdaWorkflow
                         {
                             QuoteID = Convert.ToInt32(reader["QuoteID"]),
                             QuoteNumber = reader["QuoteNumber"].ToString(),
-                            QuoteTypeID = Convert.ToInt32(reader["QuoteTypeID"]),
-                            QuoteStatusResultID = Convert.ToInt32(reader["QuoteStatusResultID"]),
+                            QuoteTypeID = reader["QuoteTypeID"] != System.DBNull.Value ? (byte?)reader["QuoteTypeID"] : null,
+                            QuoteStatusLevelID = reader["QuoteStatusLevelID"] != System.DBNull.Value ? (byte?)reader["QuoteStatusLevelID"] : null,
+                            QuoteStatusResultID = reader["QuoteStatusResultID"] != System.DBNull.Value ? (byte?)reader["QuoteStatusResultID"] : null,
                             TPBackground = reader["TPBackground"].ToString()
                         };
                     }

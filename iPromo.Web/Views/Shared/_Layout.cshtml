@@ -108,16 +108,19 @@
             </div>
             <div class="collapse navbar-collapse main-nav">
                 <ul class="nav navbar-nav new-nav">
+                    @if (ViewBag.Role == "RSM")
+                    {
                     <li id="liCreateQuote" class=" dropdown-inverse">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                             Create Promotion<span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
                             <li>
-                                <a href="@string.Format("/Quotes/Create/{0}/{1}",ViewBag.UserId,ViewBag.Role)">Standard Promotion</a>
+                                <a href="@string.Format("/Quotes/Create/{0}/{1}", ViewBag.UserId, ViewBag.Role)">Standard Promotion</a>
                             </li>
                         </ul>
                     </li>
+                    }
                     <li id=" liworklist">
                         <a href="@string.Format("/Home/Index/{0}/{1}",ViewBag.UserId,ViewBag.Role)">
 

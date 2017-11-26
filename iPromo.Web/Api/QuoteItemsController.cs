@@ -129,9 +129,7 @@ namespace iPromo.Web.Api
                     quote.PMActualApprovedByUserID = (int)id.Value;
                     quote.PMApprovedByUserID = (int)id.Value;
                     quote.PMApprovedDateTime = DateTime.Now;
-                    //API CALL ToDo
-                    string pmApproval = "https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/approve?taskToken="+ Uri.EscapeDataString(quote.Token) + "&quoteid=" + quote.QuoteID ;
-                    string output = DoAPICallToApprove(pmApproval);
+                    
                     break;
                 case "POE":
                     quote.PEActualApprovedByUserId = (int)id.Value;
@@ -149,6 +147,11 @@ namespace iPromo.Web.Api
 
             foreach (var quoteItem in quoteItems)
             {
+                if (role == "PM")
+                {
+                    quoteItem.WinNetPrice = quoteItem.PMApprovedPrice;
+                    quoteItem.WinQuantity = quoteItem.RequestedQuantity;
+                }
                 _context.Entry(quoteItem).State = EntityState.Modified;
 
                 try
@@ -167,6 +170,14 @@ namespace iPromo.Web.Api
                     }
                 }
             }
+
+            //API CALL ToDo
+            if (role == "PM")
+            {
+                string pmApprovaluri = "https://wyunsq1ccf.execute-api.us-east-1.amazonaws.com/respond/approve?taskToken=" + quote.Token + "&quoteid=" + quote.QuoteID;
+                string output = DoAPICallToApprove(pmApprovaluri);
+            }
+
             return Ok(new { success = true });// CreatedAtAction("GetQuoteItem", new { id = quoteItem.QuoteItemID }, quoteItem);
         }
 
@@ -188,10 +199,9 @@ namespace iPromo.Web.Api
                 {
                     // Parse the response body. Blocking!
                     var dataObjects = response.Content.ReadAsStringAsync().Result;
-                    foreach (var d in dataObjects)
-                    {
-                        output = d.ToString();
-                    }
+                    
+                        output = dataObjects.ToString();
+                    
                 }
                 else
                 {

@@ -24,8 +24,26 @@ namespace iPromo.Web.Controllers
         [HttpGet]
         [Route("")]
         [Route("Index/{id?}/{role?}")]
+        //[ResponseCache(VaryByHeader = "User-Agent", Duration = 1)]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Index(int? id=32994, string role="RSM")
         {
+            
+            //ViewBag.UserId = HttpContext.Session.GetInt32("UserId");
+            if (HttpContext.Session.GetString("Role") != role)
+            {
+                var userid = HttpContext.Session.GetInt32("UserId") ?? 0;
+                var roles = _context.SalesOrg.Where(w => w.UserID == userid).Select(s => s.Title).ToList<string>();
+                if (roles.IndexOf(role) > -1)
+                {
+                    ViewBag.Role = role;
+                    HttpContext.Session.SetString("Role", role);
+
+                }
+            }
+            
+
+         
             //var UserId = (id.HasValue && id.Value > 0) ? id.Value: 32994;
             //role = string.IsNullOrWhiteSpace(role) ? "RSM" : role;
 

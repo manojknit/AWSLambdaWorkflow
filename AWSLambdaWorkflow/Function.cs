@@ -74,7 +74,7 @@ namespace AWSLambdaWorkflow
                 }
                 if (!string.IsNullOrEmpty(response.Input))
                 {
-                    List<string> tolst = GetUsersAsPerRole("PM");   //TODO get email from db
+                    List<string> tolst = GetUsersAsPerRole("PM");   
 
                     var input = JObject.Parse(response.Input);
                     //var email = "manojsjsu@gmail.com"; //get to mail from salesOrg as per approval level

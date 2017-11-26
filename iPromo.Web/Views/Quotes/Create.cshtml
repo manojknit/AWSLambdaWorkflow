@@ -913,6 +913,10 @@
         var ds = $("#Grid").data('kendoGrid').dataSource;
         $.each(ds.data(), function (i, val) {
             //if (val.dirty) {
+            val.pmApprovedPrice = val.requestedNetPrice;
+            val.winNetPrice = val.requestedNetPrice;
+            val.winQuantity = val.requestedQuantity;
+            //val.app
             model.QuoteItem.push(val);
             //}
         });

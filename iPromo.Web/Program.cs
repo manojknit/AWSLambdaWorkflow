@@ -19,7 +19,12 @@ namespace iPromo.Web
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+                .UseKestrel()
+              .UseEnvironment("Development")
+              .UseContentRoot(Directory.GetCurrentDirectory())
+              .UseIISIntegration()
+              .UseStartup<Startup>()
+            .UseApplicationInsights()
+              .Build();
     }
 }

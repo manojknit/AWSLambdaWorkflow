@@ -10,6 +10,8 @@ using iPromo.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Amazon.SimpleSystemsManagement;
+using Microsoft.AspNetCore.Http;
 
 namespace iPromo.Web
 {
@@ -36,6 +38,7 @@ namespace iPromo.Web
             })
             .AddAzureAd(options => Configuration.Bind("AzureAd", options))
             .AddCookie();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMvc();
 
             // Adds a default in-memory implementation of IDistributedCache.
@@ -48,8 +51,22 @@ namespace iPromo.Web
                 options.IdleTimeout = TimeSpan.FromSeconds(10);
                 options.Cookie.HttpOnly = true;
             });
-
-            var cn = Configuration.GetValue<string>("ConnectionStrings:DefaultConnection");
+            //SQL Connection String
+            var cn = Configuration.GetValue<string>("ConnectionStrings:DefaultConnection");//Get from config use in dev system. Config can't be check in to git
+            
+            if (string.IsNullOrEmpty(cn))
+            {
+                using (AmazonSimpleSystemsManagementClient ssm = new AmazonSimpleSystemsManagementClient(Amazon.RegionEndpoint.USEast1))
+                {
+                    Amazon.SimpleSystemsManagement.Model.GetParameterRequest request = new Amazon.SimpleSystemsManagement.Model.GetParameterRequest { Name = "mysqlconnectionstring", WithDecryption = true };
+                    var responsetask = ssm.GetParameterAsync(request);
+                    responsetask.GetAwaiter();
+                    var response = responsetask.Result;
+                    //if(responsetask.)
+                    if (response != null)
+                        cn = response.Parameter.Value;
+                }
+            }
             services.AddScoped<iPromoDataContext>(_ => new iPromoDataContext(cn));
         }
 

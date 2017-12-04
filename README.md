@@ -59,12 +59,12 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 *	ELB – used for load balancing
 *	AutoScaling Group – Multi AZ deployment is set for auto scaling
 *	AWS SAM(Serverless Application Model). Lambda – 
-  1 Worker Lambda to initiate task in Step Function workflow. 
-  2 Post Workflow update lambda. Triggered as a part of Step Function.
+   1 Worker Lambda to initiate task in Step Function workflow. 
+   2 Post Workflow update lambda. Triggered as a part of Step Function.
 *	AWS Step Functions State machine Workflow implementation for task orchestration 
 *	API Gateway – Endpoint for email approval. Integrates to Step function.
 *	Amazon Simple Email Service (SES) Useing to send emails for approvals 
-*	Single AZ RDS Db converted to Multi AZ Select InstanceInstance ActionModifyMulti AZ deployment to Yes.
+*	Single AZ RDS Db converted to Multi AZ Select Instance -> Instance Action -> Modify -> Multi AZ deployment to Yes.
 *	Parameter Store: Simple Systems Management - SSM 
 *	KMS - Key to Encryption sensitive secrets 
 *	IAM – Permissions/role/group
@@ -131,30 +131,34 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 
 
 ## Application Screenshots
-#### Main List Page: In this page user can see list of images. which are stores in AWS S3 and metadata in AWSS RDS MySQL DB.
+#### Sign in/Sign out Page: This application demonstrates Azure ADFS authentication.
 <img src="images/image_list.PNG">
 
-#### Upload image and Create image metadata Page: In this page user can upload picture and set metadata in subsequent page.
+#### Promotion Submission: Sales Rep can submit promotions for their customers.
 <img src="images/create_image.PNG">
 <img src="images/create_image_metadata.PNG">
 
-#### Detail Page: This page displays detail of image with thumbnail
+#### Worklist page: To see action items as per role and user
 <img src="images/detail_image.PNG">
 
-#### Edit Page: In this page user can update metadat of image and can also replace it. Validation is inplace to keep file name same to replace.
+#### Report: As per role report exposes data.
 <img src="images/updatemeta.PNG">
 <img src="images/replace_image.PNG">
 
-#### Delete Page:
+#### Approval: Pricing manager can approve using web portal
 <img src="images/rename_image.PNG">
 
-#### Validations: System has file type and file size validation
+#### Approval: Pricing manager can approve using email
 <img src="images/validationfilesize.PNG">
+##### Email communication-using security token. Approval Status Update
 <img src="images/validationfiletype.PNG">
 
-#### Sign in/Sign out Page: This application demonstrates Azure ADFS authentication.
+#### State Machine: Workflow
 <img src="images/signin.PNG">
 <img src="images/signout.PNG">
+
+#### Chat Bot: For Help
+<img src="images/signin.PNG">
 
 ## How to Run
 * Visual Studio 2017

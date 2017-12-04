@@ -27,11 +27,11 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 6.	Option for Email Approval by Pricing Team
 7.	Reporting
 8.	Chat Bot for Help
-   *End user service
-   *Online conversation
-   *Purchase Histories
-   *New Request Positions
-   *Streamlining workflow
+    * End user service
+    * Online conversation
+    * Purchase Histories
+    * New Request Positions
+    * Streamlining workflow
 9.	CloudWatch Alarm is set with SNS topic email notifications for Elastic Beanstalk network traffic crosses threshold traffic.
 10.	Site is also configured for HTTPs. Secure login using HTTPs.
 11.	Faster release cycle using AWS CICD with Docker
@@ -59,8 +59,8 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 *	ELB – used for load balancing
 *	AutoScaling Group – Multi AZ deployment is set for auto scaling
 *	AWS SAM(Serverless Application Model). Lambda – 
-   *	Worker Lambda to initiate task in Step Function workflow. 
-   * Post Workflow update lambda. Triggered as a part of Step Function.
+  1 Worker Lambda to initiate task in Step Function workflow. 
+  2 Post Workflow update lambda. Triggered as a part of Step Function.
 *	AWS Step Functions State machine Workflow implementation for task orchestration 
 *	API Gateway – Endpoint for email approval. Integrates to Step function.
 *	Amazon Simple Email Service (SES) Useing to send emails for approvals 
@@ -81,8 +81,13 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 
 
 ## Architecture diagrams
-<img src="images/CloudArchitecture.PNG">
-<img src="images/StateMachineEmailApproval">
+
+<img src="/Images/CloudArchitecture.png">
+
+
+<img src="/Images/StateMachineEmailApproval.png">
+
+
 ```
 {
   "Comment": "Sales Promotion Approval Process!",
@@ -101,14 +106,29 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
     }
   }
 }
-```  
-<img src="images/VPC.PNG">
-<img src="images/S3.PNG">
-<img src="images/SequenceDiaASP.NetMVCCore.PNG">
-<img src="images/WebAppArchitecture.PNG">
-<img src="images/CICD.PNG">
-<img src="images/Lex.PNG">
-<img src="images/SlackIntegration.PNG">
+```
+
+
+<img src="/Images/VPC.png">
+
+
+<img src="/Images/S3.png">
+
+
+<img src="/Images/SequenceDiaASP.NetMVCCore.png">
+
+
+<img src="/Images/WebAppArchitecture.png">
+
+
+<img src="/Images/CICD.png">
+
+
+<img src="/Images/Lex.png">
+
+
+<img src="/Images/SlackIntegration.png">
+
 
 ## Application Screenshots
 #### Main List Page: In this page user can see list of images. which are stores in AWS S3 and metadata in AWSS RDS MySQL DB.

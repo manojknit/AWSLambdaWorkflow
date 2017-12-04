@@ -58,9 +58,9 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 *	EC2 – Auto scale “64bit Windows Server 2016 v1.2.0 running IIS 10.0” EC2 instances are used.
 *	ELB – used for load balancing
 *	AutoScaling Group – Multi AZ deployment is set for auto scaling
-*	AWS SAM(Serverless Application Model). Lambda – 
-   1 Worker Lambda to initiate task in Step Function workflow. 
-   2 Post Workflow update lambda. Triggered as a part of Step Function.
+*	AWS SAM(Serverless Application Model). Lambda:
+    o Worker Lambda to initiate task in Step Function workflow. 
+    o Post Workflow update lambda. Triggered as a part of Step Function.
 *	AWS Step Functions State machine Workflow implementation for task orchestration 
 *	API Gateway – Endpoint for email approval. Integrates to Step function.
 *	Amazon Simple Email Service (SES) Useing to send emails for approvals 
@@ -132,33 +132,28 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 
 ## Application Screenshots
 #### Sign in/Sign out Page: This application demonstrates Azure ADFS authentication.
-<img src="images/image_list.PNG">
+<img src="/Images/sign_in.png">
 
 #### Promotion Submission: Sales Rep can submit promotions for their customers.
-<img src="images/create_image.PNG">
-<img src="images/create_image_metadata.PNG">
+<img src="/Images/promo_submission.png">
 
 #### Worklist page: To see action items as per role and user
-<img src="images/detail_image.PNG">
+<img src="/Images/worklist.png">
 
 #### Report: As per role report exposes data.
-<img src="images/updatemeta.PNG">
-<img src="images/replace_image.PNG">
+<img src="/Images/report.png">
 
 #### Approval: Pricing manager can approve using web portal
-<img src="images/rename_image.PNG">
+<img src="/Images/approval.png">
 
 #### Approval: Pricing manager can approve using email
-<img src="images/validationfilesize.PNG">
-##### Email communication-using security token. Approval Status Update
-<img src="images/validationfiletype.PNG">
+<img src="/Images/email_approval.png">
 
 #### State Machine: Workflow
-<img src="images/signin.PNG">
-<img src="images/signout.PNG">
+<img src="/Images/strate_machine.png">
 
 #### Chat Bot: For Help
-<img src="images/signin.PNG">
+<img src="/Images/slack.png">
 
 ## How to Run
 * Visual Studio 2017
@@ -228,13 +223,13 @@ file_desc VARCHAR(100)
 
 
 ## License
-The SnapBox – By CloudJibe is licensed under the terms of the GPL Open Source license and is available for free.
+The iPromo – By CloudJibe is licensed under the terms of the GPL Open Source license and is available for free.
 ## Refrence
 * University Name: http://www.sjsu.edu/ 
 * Course: Cloud Technologies
-* Professor Sanjay Garje 
-* ISA: Divyankitha Urs
-* Student: Manoj Kumar (https://www.linkedin.com/in/manojkumar19/)
+* Professor [Sanjay Garje](https://www.linkedin.com/in/sanjaygarje/)
+* ISA: [Divyankitha Urs](https://www.linkedin.com/in/divyankithaurs/)
+* Student: [Manoj Kumar](https://www.linkedin.com/in/manojkumar19/)
 
 
 

@@ -27,11 +27,11 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 6.	Option for Email Approval by Pricing Team
 7.	Reporting
 8.	Chat Bot for Help
-	End user service
-	Online conversation
-	Purchase Histories
-	New Request Positions
-	Streamlining workflow
+   *End user service
+   *Online conversation
+   *Purchase Histories
+   *New Request Positions
+   *Streamlining workflow
 9.	CloudWatch Alarm is set with SNS topic email notifications for Elastic Beanstalk network traffic crosses threshold traffic.
 10.	Site is also configured for HTTPs. Secure login using HTTPs.
 11.	Faster release cycle using AWS CICD with Docker
@@ -59,8 +59,8 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 *	ELB – used for load balancing
 *	AutoScaling Group – Multi AZ deployment is set for auto scaling
 *	AWS SAM(Serverless Application Model). Lambda – 
-  *	Worker Lambda to initiate task in Step Function workflow. 
-  * Post Workflow update lambda. Triggered as a part of Step Function.
+   *	Worker Lambda to initiate task in Step Function workflow. 
+   * Post Workflow update lambda. Triggered as a part of Step Function.
 *	AWS Step Functions State machine Workflow implementation for task orchestration 
 *	API Gateway – Endpoint for email approval. Integrates to Step function.
 *	Amazon Simple Email Service (SES) Useing to send emails for approvals 
@@ -81,12 +81,34 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 
 
 ## Architecture diagrams
-<img src="images/CloudArchitectureS3RDSetc.PNG">
-<img src="images/BackendObjectStorageDiagram.PNG">
-<img src="images/ASPNETCoreApplicationArchitecture.PNG">
-<img src="images/SequenceDiagram-MVCASPNetCore.PNG">
-<img src="images/AWS_ASPNetCoreebHostingArchitecture.PNG">
-
+<img src="images/CloudArchitecture.PNG">
+<img src="images/StateMachineEmailApproval">
+```
+{
+  "Comment": "Sales Promotion Approval Process!",
+  "StartAt": "PMApprovalActivity",
+  "States": {
+    "PMApprovalActivity": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:us-east-1:494875521123:activity:PMApprovalStep",
+      "TimeoutSeconds": 3600,
+      "Next": "PostPMApprovalActivity"
+    },
+    "PostPMApprovalActivity": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:494875521123:function:UpdateDBonApproval",
+      "End": true
+    }
+  }
+}
+```  
+<img src="images/VPC.PNG">
+<img src="images/S3.PNG">
+<img src="images/SequenceDiaASP.NetMVCCore.PNG">
+<img src="images/WebAppArchitecture.PNG">
+<img src="images/CICD.PNG">
+<img src="images/Lex.PNG">
+<img src="images/SlackIntegration.PNG">
 
 ## Application Screenshots
 #### Main List Page: In this page user can see list of images. which are stores in AWS S3 and metadata in AWSS RDS MySQL DB.

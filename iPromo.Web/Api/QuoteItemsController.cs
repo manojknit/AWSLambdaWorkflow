@@ -216,7 +216,7 @@ namespace iPromo.Web.Api
         }
 
         [HttpPost]
-        [Route("accept/{id?}/{role?}/{quoteNumber?}")]
+        [Route("accept/{id?}/{username?}/{role?}/{quoteNumber?}")]
         public async Task<IActionResult> AcceptQuoteItems(long? id, string role, string quoteNumber, [FromBody] List<QuoteItem> quoteItems)
         {
             if (!ModelState.IsValid)

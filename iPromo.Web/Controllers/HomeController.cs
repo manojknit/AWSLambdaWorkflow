@@ -43,23 +43,6 @@ namespace iPromo.Web.Controllers
             }
             
 
-         
-            //var UserId = (id.HasValue && id.Value > 0) ? id.Value: 32994;
-            //role = string.IsNullOrWhiteSpace(role) ? "RSM" : role;
-
-            //var UserName = _context.SalesOrg.Where(w => w.UserID == UserId).Select(s => s.UserName).FirstOrDefault();
-            //var roles = _context.SalesOrg.Where(w => w.UserID == UserId).Select(s => s.Title).ToList();
-
-            //ViewBag.UserName = UserName;
-            //ViewBag.Roles = roles;
-            //ViewBag.Role = role;
-            //ViewBag.UserId = UserId;
-
-            //HttpContext.Session.SetInt32("UserId", UserId);
-            //HttpContext.Session.SetString("UserName", UserName);
-            //HttpContext.Session.SetString("Role", role);
-            //HttpContext.Session.SetString("Roles", string.Join(',', roles));
-
             return View();
         }
 
@@ -67,21 +50,6 @@ namespace iPromo.Web.Controllers
         [Route("Report/{id?}/{role?}")]
         public IActionResult Report(int? id, string role)
         {
-            //var UserId = (id.HasValue && id.Value > 0) ? id.Value : 32994;
-            //role = string.IsNullOrWhiteSpace(role) ? "RSM" : role;
-
-            //var UserName = _context.SalesOrg.Where(w => w.UserID == UserId).Select(s => s.UserName).FirstOrDefault();
-            //var roles = _context.SalesOrg.Where(w => w.UserID == UserId).Select(s => s.Title).ToList();
-
-            //ViewBag.UserName = UserName;
-            //ViewBag.Roles = roles;
-            //ViewBag.Role = role;
-            //ViewBag.UserId = UserId;
-
-            //HttpContext.Session.SetInt32("UserId", UserId);
-            //HttpContext.Session.SetString("UserName", UserName);
-            //HttpContext.Session.SetString("Role", role);
-            //HttpContext.Session.SetString("Roles", string.Join(',', roles));
 
             return View();
         }

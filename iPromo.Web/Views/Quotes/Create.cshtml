@@ -25,7 +25,7 @@
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-md-4">
-                        <h3 class="panel-title">SPA/TPM Quote</h3>
+                        <h3 class="panel-title">Standard Promo</h3>
                     </div>
                 </div>
             </div>
@@ -33,13 +33,13 @@
                 <div class="row">
                     <div class="col-sm-6 col-md-3 form-group">
                         <div class="control-label">
-                            Quote Number
+                            Promo Number
                         </div>
                         <input type="text" class="form-control" readonly id="QuoteNumber" name="QuoteNumber" value="@Model.QuoteNumber">
                     </div>
                     <div class="col-sm-6 col-md-3 form-group">
                         <div class="control-label">
-                            Quote Status
+                            Promo Status
                         </div>
                         <div class="btn-sm form-control status-@statusStyle">@string.Format("{0} ({1})", StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)], StaticItems.QuoteStatusLevel[(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)])</div>
 
@@ -64,7 +64,7 @@
                         <div class="row">
                             <div class="col-sm-12 col-md-9 form-group">
                                 <div class="control-label">
-                                    Quote Description
+                                    Promo Description
                                 </div>
                                 <input type="text" @isReadOnly class="form-control " required id="TPBackground" name="TPBackground" placeholder="Type a value" value="@Model.TPBackground" />
                             </div>
@@ -142,23 +142,30 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="subheading">
-                            Quote Validity
+                            Promo Validity
                             <hr>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-6 col-md-6 form-group">
+                    <div class="col-sm-5 col-md-5 form-group">
                         <div class="control-label">
                             Valid From
                         </div>
                         <input id="PromoFromDatetime" required class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@(Model.PromoFromDatetime.HasValue?Model.PromoFromDatetime.Value.ToString("MMM dd, yyyy"):"")">
                     </div>
-                    <div class="col-sm-6 col-md-6 form-group">
+                    <div class="col-sm-5 col-md-5 form-group">
                         <div class="control-label">
                             Valid To
                         </div>
                         <input id="PromolToDatetime" required class="form-control" name="PromolToDatetime" placeholder="Select date" value="@(Model.PromolToDatetime.HasValue?Model.PromolToDatetime.Value.ToString("MMM dd, yyyy"):"")">
+                    </div>
+                    <div class="col-sm-2 col-md-2 form-group">
+                        <div class="control-label">
+                            Help
+                        </div>
+                        <a href="https://www.google.com/url?q=https%3A%2F%2Fappandintegration.slack.com%2Fmessages%2FD88G1G12B%2F&sa=D&sntz=1&usg=AFQjCNFdbm1uxzUk1P0x48ZxW_ydxP_MMw" target="_blank" class="btn btn-primary"><span>Need Help</span></a>
+                        
                     </div>
                 </div>
             </div>
@@ -168,7 +175,7 @@
             <div class="panel-heading">
                 <div class="row">
                     <div class="col-md-4">
-                        <h3 class="panel-title">Add/Edit Product For Quote</h3>
+                        <h3 class="panel-title">Add/Edit Product For Promo</h3>
                     </div>
                 </div>
             </div>
@@ -195,13 +202,10 @@
                             </div>
                             @if (statusStyle != "inq-winloss")
                             {
-                            <input type="button" value="Delete" name="Delete" data-command="quote.delete" id="btnDeleteQuote" class="btn btn-primary command">
+                                <input type="button" value="Delete" name="Delete" data-command="quote.delete" id="btnDeleteQuote" class="btn btn-primary command">
+                                <input type="button" value="Save" name="Save" data-command="quote.save" id="btnSave" class="btn btn-primary command">
                             }
                             @*<input type="button" value="Copy" name="Copy" data-command="quote.copy" id="btnCopy" class="btn btn-primary command">*@
-                            @if (statusStyle != "inq-winloss")
-                            {
-                            <input type="button" value="Save" name="Save" data-command="quote.save" id="btnSave" class="btn btn-primary command">
-                            }
                             <input type="button" value="Submit" name="Submit" data-command="quote.submit" id="btnSubmit" class="btn btn-primary command">
                         </div>
 
@@ -282,7 +286,7 @@
             {
                 field: "pmApprovedPrice",
                 title: "PM ApprovedPrice",
-                template: '<input type="text" class="pm readonly" name="pmApprovedPrice" value="#=pmApprovedPrice#"></input>',
+                template: "#= pmApprovedPrice > 0 ? pmApprovedPrice : '' #",
                 hidden: true
             },
             {
@@ -320,7 +324,7 @@
             {
                 field: "requestedQuantity",
                 title: "Quantity",
-                editor: editNumber,
+                template: "#= requestedQuantity > 0 ? requestedQuantity : '' #"
             },
             {
                 field: "msrp",
@@ -340,7 +344,7 @@
             {
                 field: "requestedNetPrice",
                 title: "Req. Net Price",
-                editor: editNumber,
+                template: "#= requestedNetPrice > 0 ? requestedNetPrice : '' #"
             },
             {
                 field: "estimatedRevenue",
@@ -387,7 +391,7 @@
             {
                 field: "vpFinanceApprovedPrice",
                 title: "ApprovedPrice",
-                template: '<input type="text" class="vpfinance readonly" name="vpFinanceApprovedPrice" value="#=vpFinanceApprovedPrice#"></input>'
+                template: "#= vpFinanceApprovedPrice > 0 ? vpFinanceApprovedPrice : '' #",
             }
         ]
     }
@@ -408,7 +412,7 @@
             change: function (e) { },
             format: "MMM dd, yyyy",
         }).data("kendoDatePicker");
-        
+
         dtpkNeedPriceApprovedBy.enable(!app.isReadonly);
         dtpkPromolToDatetime.enable(!app.isReadonly);
         dtpkPromoFromDatetime.enable(!app.isReadonly);
@@ -677,6 +681,17 @@
             kddlAccountManager.text('@ViewBag.AccountManagerName');
             kddlAccountManager.enable(false);
         }
+        else if (app.QuoteStatusResultID == 12) {
+            //'save' mode, need to set value in dropdown
+            var kddlAccountManager = $("#kddlAccountManager").data("kendoDropDownList");
+            kddlAccountManager.setDataSource(GetListOfAccountManager());
+            var accountManagerValue = '@Model.AccountManagerID';
+            if (accountManagerValue == "" || accountManagerValue == null || accountManagerValue == undefined) {
+                accountManagerValue = app.userId;
+            }
+            kddlAccountManager.value(accountManagerValue);
+            $('#frm input[name=AccountManagerID]').val(accountManagerValue);
+        }
         if (app.quoteNumber == "") {
             $("#publicAttachment").data("kendoUpload").disable();
         }
@@ -685,6 +700,9 @@
         //var c = e.container.find('input[name=requestedPOS]');
         //var c = e.container.find('input[name=requestedPOS]');
         if (e.container.find('input[name=requestedPOS]').length || e.container.find('input[name=estimatedRevenue]').length || e.container.find('input[name=estimatedDiscount]').length) {
+            this.closeCell();
+        }
+        if (app.QuoteStatusResultID == 14 && (e.container.find('input[name=ProductNumber]').length || e.container.find('input[name=requestedQuantity]').length || e.container.find('input[name=requestedNetPrice]').length || e.container.find('input[name=vpFinanceApprovedPrice]').length)) {
             this.closeCell();
         }
     }
@@ -818,14 +836,7 @@
         }
 
         var ddl = $("#kddlAccountManager").data("kendoDropDownList");
-        var dsAccountManager = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: "/api/Quotes/getaccountmanager"
-                }
-            }
-        });
-        ddl.setDataSource(dsAccountManager);
+        ddl.setDataSource(GetListOfAccountManager());
         ddl.value(app.userId);
     }
 
@@ -841,6 +852,17 @@
         if (dataItem != undefined) {
             $("#EndCustomerName").val(dataItem.customer_Desc);
         }
+    }
+
+    function GetListOfAccountManager() {
+        var dsAccountManager = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: "/api/Quotes/getaccountmanager"
+                }
+            }
+        });
+        return dsAccountManager;
     }
 
     $("#kCustomers").on("keyup", function (e) {
@@ -887,6 +909,7 @@
     });
 
     function validateQuote() {
+    debugger;
         var isValidQ = $('#frm').kendoValidator().data("kendoValidator").validate();
         var isValidQi = validateQuoteItems();
         return isValidQ && isValidQi;
@@ -912,11 +935,11 @@
         model.QuoteItem = [];
         var ds = $("#Grid").data('kendoGrid').dataSource;
         $.each(ds.data(), function (i, val) {
-            //if (val.dirty) {
+            //if (val.dirty) { ToDo remove following 3 lines to do more approvals
             val.pmApprovedPrice = val.requestedNetPrice;
+            val.vpFinanceApprovedPrice = val.requestedNetPrice;
             val.winNetPrice = val.requestedNetPrice;
             val.winQuantity = val.requestedQuantity;
-            //val.app
             model.QuoteItem.push(val);
             //}
         });
@@ -957,9 +980,9 @@
         var postData = [];
         var ds = $("#Grid").data('kendoGrid').dataSource;
         $.each(ds.data(), function (i, val) {
-            if (val.dirty) {
+            //if (val.dirty) {//ToDo uncomment
                 postData.push(val);
-            }
+            //}
         });
         var api = "/api/quoteitems/accept/" + app.userId + "/" + app.userName + "/" + app.role + "/" + app.quoteNumber + "/" + $("#publicComment")[0].value;
         $.ajax({

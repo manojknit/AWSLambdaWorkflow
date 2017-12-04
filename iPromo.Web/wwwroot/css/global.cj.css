@@ -306,10 +306,18 @@ a {
         color: black;
     }
 
-/*#ProductNumber-list {
+    .k-list-container ul {
+        overflow: hidden !important;
+    }
+
+.k-footer {
+    font-weight: bold;
+}
+
+#ProductNumber-list {
     width: 800px !important;
     overflow: auto;
-}*/
+}
 
 .dropdown-header {
     background-color: #1ebea5;
@@ -345,3 +353,7 @@ a {
         border-color: #b6b6b6;
         background-color: #bcb4b0;
     }
+
+.graybgcolor {
+    background-color: #eee !important;
+}

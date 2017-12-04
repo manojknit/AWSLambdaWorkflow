@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using iPromo.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using System.IO;
 
 namespace iPromo.Web.Controllers
 {
@@ -73,17 +74,17 @@ namespace iPromo.Web.Controllers
             ViewBag.AccountManagerName = accountManagerName;
             ViewBag.QuoteNumber = quote.QuoteNumber;
 
-            //var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
-            //if (Directory.Exists(uploadPath) == true)
-            //{
-            //    var files = Directory.GetFiles(uploadPath);
-            //    var fileList = new Dictionary<string, string>();
-            //    for (int i = 0; i < files.Length; i++)
-            //    {
-            //        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
-            //    }
-            //    ViewBag.Files = fileList;
-            //}
+            var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
+            if (Directory.Exists(uploadPath) == true)
+            {
+                var files = Directory.GetFiles(uploadPath);
+                var fileList = new Dictionary<string, string>();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
+                }
+                ViewBag.Files = fileList;
+            }
 
             return View("Approval", quote);
         }
@@ -131,17 +132,17 @@ namespace iPromo.Web.Controllers
 
             ViewBag.QuoteNumber = quote.QuoteNumber;
 
-            //var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
-            //if (Directory.Exists(uploadPath) == true)
-            //{
-            //    var files = Directory.GetFiles(uploadPath);
-            //    var fileList = new Dictionary<string, string>();
-            //    for (int i = 0; i < files.Length; i++)
-            //    {
-            //        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
-            //    }
-            //    ViewBag.Files = fileList;
-            //}
+            var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
+            if (Directory.Exists(uploadPath) == true)
+            {
+                var files = Directory.GetFiles(uploadPath);
+                var fileList = new Dictionary<string, string>();
+                for (int i = 0; i < files.Length; i++)
+                {
+                    fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
+                }
+                ViewBag.Files = fileList;
+            }
 
             return View("ReadOnly", quote);
         }
@@ -193,17 +194,17 @@ namespace iPromo.Web.Controllers
                 ViewBag.AccountManagerName = accountManagerName;
 
                 ViewBag.QuoteNumber = model.QuoteNumber;
-                //var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
-                //if (Directory.Exists(uploadPath) == true)
-                //{
-                //    var files = Directory.GetFiles(uploadPath);
-                //    var fileList = new Dictionary<string, string>();
-                //    for (int i = 0; i < files.Length; i++)
-                //    {
-                //        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
-                //    }
-                //    ViewBag.Files = fileList;
-                //}
+                var uploadPath = Directory.GetCurrentDirectory() + "/wwwroot/_Documents/" + quoteNumber;
+                if (Directory.Exists(uploadPath) == true)
+                {
+                    var files = Directory.GetFiles(uploadPath);
+                    var fileList = new Dictionary<string, string>();
+                    for (int i = 0; i < files.Length; i++)
+                    {
+                        fileList[files[i].Substring(files[i].LastIndexOf("\\") + 1)] = files[i].Substring(files[i].LastIndexOf("/_Documents"));
+                    }
+                    ViewBag.Files = fileList;
+                }
             }
             return View(model);
         }

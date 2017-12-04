@@ -28,13 +28,13 @@
             <div class="row">
                 <div class="col-sm-6 col-md-3 form-group">
                     <div class="control-label">
-                        Quote Number
+                        Promo Number
                     </div>
                     <input type="text" class="form-control" @isReadOnly id="QuoteNumber" name="QuoteNumber" value="@Model.QuoteNumber">
                 </div>
                 <div class="col-sm-6 col-md-3 form-group">
                     <div class="control-label">
-                        Quote Status
+                        Promo Status
                     </div>
                     <div class="btn-sm form-control status-@statusStyle">@string.Format("{0} ({1})", StaticItems.QuoteStatusResult[(Model.QuoteStatusResultID.HasValue ? (int)Model.QuoteStatusResultID : 1)], StaticItems.QuoteStatusLevel[(Model.QuoteStatusLevelID.HasValue ? (int)Model.QuoteStatusLevelID : 1)])</div>
 
@@ -50,8 +50,8 @@
                     <div class="control-label">
                         Submit By
                     </div>
-                    <input type="text" class="form-control " @isReadOnly id="SubmittedByUserName" name="SubmittedByUserName" value="@Model.SubmittedByUserID" />
-
+                    <input type="hidden" class="form-control " @isReadOnly id="SubmittedByUserName" name="SubmittedByUserID" value="@Model.SubmittedByUserID" />
+                    <input type="text" class="form-control " id="SubmittedByUserName" name="SubmittedByUserName" value="@ViewBag.UserName" readonly="readonly" />
                 </div>
             </div>
 
@@ -60,7 +60,7 @@
                     <div class="row">
                         <div class="col-sm-12 col-md-9 form-group">
                             <div class="control-label">
-                                Quote Description
+                                Promo Description
                             </div>
                             <input type="text" @isReadOnly class="form-control " id="TPBackground" name="TPBackground" placeholder="Type a value" value="@Model.TPBackground" />
 
@@ -97,15 +97,13 @@
                     <div class="control-label">
                         Sold To Name
                     </div>
-                    <input id="PlanningAccountName" class="form-control" type="text" @isReadOnly name="PlanningAccountName" />
-
+                    <input id="PlanningAccountName" class="form-control" type="text" @isReadOnly name="PlanningAccountName" value="@ViewBag.SoldToName" />
                 </div>
                 <div class="col-sm-6 col-md-3 form-group">
                     <div class="control-label">
                         Currency
                     </div>
-                    <input id="Currency" type="text" class="form-control" @isReadOnly name="Currency" value="@Model.Currency" />
-
+                    <input id="Currency" type="text" class="form-control" @isReadOnly name="Currency" value="@ViewBag.Currency" />
                 </div>
                 <div class="col-sm-6 col-md-3 form-group-xs form-group">
                     <div class="control-label">
@@ -120,21 +118,20 @@
                     <div class="control-label">
                         Tier 2 Customer #
                     </div>
-                    <input type="text" id="EndCustomerName" class="form-control" name="EndCustomerName" @isReadOnly value="@Model.EndCustomerID" />
+                    <input type="text" id="Tier2CustomerName" class="form-control" name="Tier2CustomerName" @isReadOnly value="@ViewBag.Tier2CustomerName" />
                 </div>
                 <div class="col-sm-6 col-md-6 form-group">
                     <div class="control-label">
                         End User
                     </div>
-                    <input type="text" id="EndCustomerName" class="form-control" name="EndCustomerName" @isReadOnly value="@Model.EndUser" />
-
+                    <input type="text" id="EndCustomerName" class="form-control" name="EndCustomerName" @isReadOnly value="@ViewBag.EndCustomerName" />
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-12">
                     <div class="subheading">
-                        Quote Validity
+                        Promo Validity
                         <hr>
                     </div>
                 </div>
@@ -145,13 +142,13 @@
                     <div class="control-label">
                         Valid From
                     </div>
-                    <input id="PromoFromDatetime" class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@Model.PromoFromDatetime">
+                    <input id="PromoFromDatetime" class="form-control" name="PromoFromDatetime" placeholder="Select date" value="@(Model.PromoFromDatetime.HasValue?Model.PromoFromDatetime.Value.ToString("MMM dd, yyyy"):"")">
                 </div>
                 <div class="col-sm-6 col-md-6 form-group">
                     <div class="control-label">
                         Valid To
                     </div>
-                    <input id="PromolToDatetime" class="form-control" name="PromolToDatetime" placeholder="Select date" value="@Model.PromolToDatetime">
+                    <input id="PromolToDatetime" class="form-control" name="PromolToDatetime" placeholder="Select date" value="@(Model.PromolToDatetime.HasValue?Model.PromolToDatetime.Value.ToString("MMM dd, yyyy"):"")">
                 </div>
             </div>
         </div>
@@ -161,7 +158,7 @@
         <div class="panel-heading">
             <div class="row">
                 <div class="col-md-4">
-                    <h3 class="panel-title">Add/Edit Product For Quote</h3>
+                    <h3 class="panel-title">Add/Edit Product For Promo</h3>
                 </div>
             </div>
         </div>
@@ -175,7 +172,7 @@
             <div class="row">
                 <div class="pull-right ">
                     <div id="divSubmitSpinner" class="spinnerSubmit" style="display:none;">
-                        <img id="img-spinner" src="/Content/Images/ajax-loader-small.GIF">
+                        <img id="img-spinner" src="~/kendo/styles/BlueOpal/loading-image.gif">
                     </div>
                     <div id="SubmitButtons" style="margin-right: 15px; visibility: visible;">
 
@@ -188,9 +185,10 @@
                             <ul class="dropdown-menu" id="versionHistory"></ul>
 
                         </div>
+                        <input type="button" value="Get Suggested Price" name="GetSuggPrice" id="btnGetSuggPrice" class="btn btn-primary command" onclick="return getSuggPrice(this);">
                         <input type="submit" value="Approve" name="Command" id="btnDeleteQuote" class="btn btn-primary" data-mode="Approve" onclick="return approveQuote(this);">
-                        <input type="submit" value="Cancel" name="Command" id="btnCopy" class="btn btn-primary" data-mode="Cancel">
-                        <input type="submit" value="Reject" name="Command" id="btnSave" class="btn btn-primary" data-mode="Reject">
+                        <input type="submit" value="Cancel" name="Command" id="btnCopy" class="btn btn-primary" data-mode="Cancel" onclick="return cancelQuote(this);">
+                        <input type="submit" value="Reject" name="Command" id="btnSave" class="btn btn-primary" data-mode="Reject" onclick="return rejectQuote(this);">
 
                     </div>
 
@@ -206,6 +204,10 @@
             </div>
         </div>
     </div>
+    <!--------------------------------------------- New panel --------------------------------------------->
+    <div class="panel panel-primary">
+        @Html.Partial("~/Views/Shared/_CommentsAndAttachments.cshtml", Model)
+    </div>
 </div>
 <script type="text/javascript">
     var hiddenColumns = {};
@@ -218,7 +220,7 @@
                 postData.push(val);
             }
         });
-        var api = "/api/quoteitems/approval/" + app.userId + "/" + app.role + "/" + app.quoteNumber;
+        var api = "/api/quoteitems/approval/" + app.userId + "/" + app.userName + "/" + app.role + "/" + app.quoteNumber + "/" + $("#publicComment")[0].value;
         $.ajax({
             url: api,
             type: 'POST',
@@ -236,8 +238,80 @@
         });
         return false;
     };
+    var rejectQuote = function (e) {
+        var api = "/api/quoteitems/reject/" + app.userId + "/" + app.userName + "/" + app.quoteNumber + "/" + $("#publicComment")[0].value;
+        $.ajax({
+            url: api,
+            type: 'POST',
+            contentType: "application/json",
+            success: function (result) {
+                alert("Rejected quote succesfully");
+                window.location.href = "/Home/Index/" + app.userId + '/' + app.role;
+                //dfd.resolve({ Success: true, Result: result });
+            },
+            error: function (xhr) {
+                alert("Error while rejecting quote");
+                //dfd.resolve({
+                //    Success: false, Message: "Something went wrong..!!!"
+                //});
+            }
+        });
+        return false;
+    };
+    var cancelQuote = function (e) {
+        var api = "/api/quoteitems/cancel/" + app.userId + "/" + app.userName + "/" + app.quoteNumber + "/" + $("#publicComment")[0].value;
+        $.ajax({
+            url: api,
+            type: 'POST',
+            contentType: "application/json",
+            success: function (result) {
+                alert("Cancelled quote succesfully");
+                window.location.href = "/Home/Index/" + app.userId + '/' + app.role;
+                //dfd.resolve({ Success: true, Result: result });
+            },
+            error: function (xhr) {
+                alert("Error while cancelling quote");
+                //dfd.resolve({
+                //    Success: false, Message: "Something went wrong..!!!"
+                //});
+            }
+        });
+        return false;
+    };
+    var getSuggPrice = function (e) {
+        var planningAccountNumberValue = '@Model.PlanningAccountNumber';
+        var endCustomerValue = '@Model.EndCustomerID';
+        var promoFromDatetimeValue = '@Model.PromoFromDatetime';
+        var gridItems = $("#Grid").data("kendoGrid").dataSource._data;
+        if (planningAccountNumberValue != "" && planningAccountNumberValue != null && planningAccountNumberValue != undefined && parseInt(planningAccountNumberValue) > 0 &&
+            endCustomerValue != "" && endCustomerValue != null && endCustomerValue != undefined && parseInt(endCustomerValue) > 0 &&
+            promoFromDatetimeValue != "" && promoFromDatetimeValue != null && promoFromDatetimeValue != undefined &&
+            gridItems.length > 0 && gridItems[0].productNumber.trim().length > 0) {
+            //
+            var api = "/api/quoteitems/getSuggPrice/" + planningAccountNumberValue + "/" + endCustomerValue + "/" + promoFromDatetimeValue + "/" + gridItems[0].productNumber.trim();
+            $.ajax({
+                url: api,
+                type: 'POST',
+                contentType: "application/json",
+                success: function (result) {
+                    if (parseInt(result.listPrice) > 0) {
+                        alert("Price is : " + result.listPrice);
+                    }
+                    else {
+                        alert("Price is : 48.7");//default value
+                    }
+                },
+                error: function (xhr) {
+                    alert("Error occured");
+                }
+            });
+        }
+        else {
+            alert("Something went wrong..please try again");
+        }
+    };
     $(document).ready(function () {
-
+        var currentRole = '@ViewBag.Role';
         var dtpkPromoFromDatetime = $("#PromoFromDatetime").kendoDatePicker({
             culture: "en-US",
             change: function (e) { },
@@ -299,8 +373,8 @@
                                 parse: function (data) {
                                     if (data != "" && data != undefined && data == 999999) {
                                         return 0;
-                                }
-                                return data;
+                                    }
+                                    return data;
                                 }
                             },
                             pmApprovedPrice: { type: "number" },
@@ -362,7 +436,7 @@
             {
                 field: "pmApprovedPrice",
                 title: "PM ApprovedPrice",
-                template: '<input type="text" class="pm readonly" name="pmApprovedPrice" value="#=pmApprovedPrice#"></input>',
+                template: (currentRole.toLowerCase() == "pm") ? '<input type="text" class="pm readonly" name="pmApprovedPrice" value="#=pmApprovedPrice > 0 ? pmApprovedPrice : 0 #"></input>' : "#= pmApprovedPrice > 0 ? pmApprovedPrice : '' #"
             },
             {
                 field: "peRedLine",
@@ -372,12 +446,12 @@
             {
                 field: "peApprovedPrice",
                 title: "PE ApprovedPrice",
-                template: '<input type="text" class="poe readonly" name="peApprovedPrice" value="#=peApprovedPrice#"></input>',
+                template: (currentRole.toLowerCase() == "poe") ? '<input type="text" class="poe readonly" name="peApprovedPrice" value="#=peApprovedPrice > 0 ? peApprovedPrice : 0 #"></input>' : "#= peApprovedPrice > 0 ? peApprovedPrice : '' #"
             },
             {
                 field: "vpFinanceApprovedPrice",
                 title: "ApprovedPrice",
-                template: '<input type="text" class="vpfinance readonly" name="vpFinanceApprovedPrice" value="#=vpFinanceApprovedPrice#"></input>',
+                template: (currentRole.toLowerCase() == "vp finance") ? '<input type="text" class="vpfinance readonly" name="vpFinanceApprovedPrice" value="#=vpFinanceApprovedPrice > 0 ? vpFinanceApprovedPrice : 0 #"></input>' : "#= vpFinanceApprovedPrice > 0 ? vpFinanceApprovedPrice : '' #"
             }
             ]
         });
@@ -393,5 +467,12 @@
         $.each(hiddenColumns[app.role], function (i, val) {
             grid.hideColumn(val);
         });
+        $("#kddlAccountManager").kendoDropDownList({
+            dataTextField: "userName",
+            dataValueField: "userID"
+        });
+        var kddlAccountManager = $("#kddlAccountManager").data("kendoDropDownList");
+        kddlAccountManager.text('@ViewBag.AccountManagerName');
+        kddlAccountManager.enable(false);
     });
 </script>

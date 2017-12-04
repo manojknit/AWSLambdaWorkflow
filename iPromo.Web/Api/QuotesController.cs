@@ -103,6 +103,7 @@ namespace iPromo.Web.Api
         // GET: api/Quotes
         [HttpGet]
         [Route("worklist/{id}/{role}")]
+        [ResponseCache(VaryByHeader = "User-Agent", NoStore =true, Duration = 0)]
         public IEnumerable<Quote> GetWorkList([FromRoute] string role, [FromRoute] long id)
         {
             var inq = StaticItems.QuoteStatusResult.Where(w => w.Value.ToLower() == "in q").Select(f => f.Key).FirstOrDefault();
@@ -131,6 +132,7 @@ namespace iPromo.Web.Api
 
         [HttpGet]
         [Route("report/{id}/{role}")]
+        [ResponseCache(VaryByHeader = "User-Agent", NoStore = true, Duration = 0)]
         public IEnumerable<Quote> GetReport([FromRoute] string role, [FromRoute] long id)
         {
             var quotes = (from q in _context.Quote

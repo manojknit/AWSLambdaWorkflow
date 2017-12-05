@@ -158,68 +158,24 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 ## How to Run
 * Visual Studio 2017
 * Clone project and open in Visual studio 2017
-* Enter your RDS MySQL database connection string in Startup.cs file line # 29.
-* Place IAM.json file in root folder where Startup.cs is there. This file will have you AWS profile information. Sample is as follows.
-```
-[local-test-profile]
-aws_access_key_id=XXXXXXXXXXXXXZX
-aws_secret_access_key=YYYYYYYYYYYYYYYYYYYYYYYYYYYYYY
-region=us-west-1
-```   
+* Enter your RDS MySQL database connection string in parameter store.
+* Use IAM roles for S3 access 
 * Set up AWS infrastructure
 * Setup Azure AD (Will cover in another article for How to)
 * Now run your application
 * This project is deployed on AWS Elastic Beanstalk on Multi AZ servers with load balancer and autoscaling.
 
 ## AWS infrastructure 
-In AWS following 3 are the main technologies which are required to run App. However I used more to make secure, highly available, reliable and scalable application.
- 1. Create S3 bucket with name as “homework2-manoj”. Enable versioning and transfer acceleration. Lifecycle can be set as architecture diagram to save cost. I also set permissions, user and group in IAM. 
+In AWS following are the main technologies which are required to run App. However I used more to make secure, highly available, reliable and scalable application.
+ 1. Create following two Lambada functions as code in code base.
+    1. Lambda to invoke workflow and send email for approval.
+    2. Post approval activity lambda 
+ 2. Ctreate StateMachine with two tasks as codein Architecture diagrams. Set IAM role and configurations.
+ 3. Create API Gateway and take promoid as request get parameter.
+ 4. Create S3 bucket with name as “homework2-manoj”. Enable versioning and transfer acceleration. Lifecycle can be set as architecture diagram to save cost. I also set permissions, user and group in IAM. 
 <img src="images/S3-lifecycle.png"/>
- 2. Setup AWS Lambda to send delete image notifications using AWS Simple Notification Service Topic. 
-Code for Lambda in NodeJS:
-
-```
-var AWS = require('aws-sdk');
-var sns = new AWS.SNS();
-console.log('Loading function');
-
-exports.handler = (event, context, callback) => {
- var srcBucket = event.Records[0].s3.bucket.name;   
-    // Object key may have spaces or unicode non-ASCII characters.
-    var srcKey    =
-    decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " ")); 
-    console.log(
-                    'Successfully resized ' + srcBucket + '/' + srcKey 
-                );
-    
-var params = {
-  Message: 'CloudJibe portal iniciated filedeletion for file - ' + srcBucket + '/' + srcKey, /* required */
-  MessageStructure: 'STRING_VALUE',
-  Subject: 'File ('+srcKey+') deleted in S3 from CloudJibe portal',
-  TopicArn: 'arn:aws:sns:us-west-1:476374:manojalb_health'
-};
-sns.publish(params, function(error, data) {
-  if (error) console.log(error, err.stack); // an error occurred
-  else     console.log(data);           // successful response
-});
-
-    //console.log('From SNS:', message);
-    callback(null, 'Successfully resized ' + srcBucket + '/' + srcKey);
-};
-```
- 3. Create RSD MySQL database. Run following script to create table.
-```
-CREATE TABLE FileUpdate (
-id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-firstname VARCHAR(30) NOT NULL,
-lastname VARCHAR(30) NOT NULL,
-email VARCHAR(50),
-upload_date datetime,
-updated_date datetime,
-file_name VARCHAR(50),
-file_desc VARCHAR(100) 
-)
-```
+ 5. Configure CICD. 
+ 3. Create RSD MySQL database as per your connection string. Run DBscript folder script to create tables and sample data.
 
 
 ## License

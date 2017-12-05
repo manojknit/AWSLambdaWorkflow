@@ -2,7 +2,7 @@
 # CloudJibe - iPromo
 ####                                                                                                     By CloudJibe
 ## Introduction 
-“iPromo” - An enterprise level cloud base promotion/deal approval system. This application provides secure, highly available, reliable and scalable platform for promotions approvals. This is enterprise level application to support HTTPS and single sign-on.   
+“iPromo” - An enterprise level cloud base promotion/deal approval system. This application provides secure, highly available, reliable and scalable platform for promotion approvals. This is enterprise level application which provides support to HTTPS and single sign-on.   
 
 ## Table of content
 * Agenda

@@ -59,8 +59,8 @@ This application demonstrates Azure Active Directory Single Sign-On Authenticati
 *	ELB – used for load balancing
 *	AutoScaling Group – Multi AZ deployment is set for auto scaling
 *	AWS SAM(Serverless Application Model). Lambda:
-    o Worker Lambda to initiate task in Step Function workflow. 
-    o Post Workflow update lambda. Triggered as a part of Step Function.
+    1. Worker Lambda to initiate task in Step Function workflow. 
+    2. Post Workflow update lambda. Triggered as a part of Step Function.
 *	AWS Step Functions State machine Workflow implementation for task orchestration 
 *	API Gateway – Endpoint for email approval. Integrates to Step function.
 *	Amazon Simple Email Service (SES) Useing to send emails for approvals 
@@ -173,9 +173,9 @@ In AWS following are the main technologies which are required to run App. Howeve
  2. Ctreate StateMachine with two tasks as codein Architecture diagrams. Set IAM role and configurations.
  3. Create API Gateway and take promoid as request get parameter.
  4. Create S3 bucket with name as “homework2-manoj”. Enable versioning and transfer acceleration. Lifecycle can be set as architecture diagram to save cost. I also set permissions, user and group in IAM. 
-<img src="images/S3-lifecycle.png"/>
  5. Configure CICD. 
- 3. Create RSD MySQL database as per your connection string. Run DBscript folder script to create tables and sample data.
+ 6. Create RSD MySQL database as per your connection string. Run DBscript folder script to create tables and sample data.
+ 7. Configure other component as in technology stack.
 
 
 ## License
